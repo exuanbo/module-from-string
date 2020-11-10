@@ -1,0 +1,41 @@
+{
+  "name": "module-from-string",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf .cache dist",
+    "dts": "tsc -d --emitDeclarationOnly --declarationDir .cache",
+    "bundle": "rollup -c",
+    "build": "yarn clean && yarn dts && yarn bundle",
+    "lint": "ts-standardx",
+    "lint:fix": "ts-standardx --fix",
+    "test": "yarn build && yarn lint && jest --no-cache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exuanbo/module-from-string.git"
+  },
+  "keywords": [],
+  "author": "exuanbo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/exuanbo/module-from-string/issues"
+  },
+  "homepage": "https://github.com/exuanbo/module-from-string#readme",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "6.1.0",
+    "@types/jest": "26.0.15",
+    "@types/node": "14.14.7",
+    "@types/uuid": "8.3.0",
+    "jest": "26.6.3",
+    "rollup": "2.33.1",
+    "rollup-plugin-dts": "1.4.13",
+    "ts-jest": "26.4.4",
+    "ts-standardx": "0.2.0",
+    "tslib": "2.0.3",
+    "typescript": "4.0.5"
+  }
+}
