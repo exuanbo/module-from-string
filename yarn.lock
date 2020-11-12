@@ -1607,10 +1607,10 @@ eslint-plugin-promise@4.2.1:
   resolved "https://registry.yarnpkg.com/eslint-plugin-promise/-/eslint-plugin-promise-4.2.1.tgz#845fd8b2260ad8f82564c1222fce44ad71d9418a"
   integrity sha512-VoM09vT7bfA7D+upt+FjeBO5eHIJQBUWki1aPvB+vbNiHS3+oGIJGIeyBtKQTME6UPXXy3vV07OL1tHd3ANuDw==
 
-eslint-plugin-standard@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-standard/-/eslint-plugin-standard-4.0.2.tgz#021211a9f077e63a6847e7bb9ab4247327ac8e0c"
-  integrity sha512-nKptN8l7jksXkwFk++PhJB3cCDTcXOEyhISIN86Ue2feJ1LFyY3PrY3/xT2keXlJSY5bpmbiTG0f885/YKAvTA==
+eslint-plugin-standard@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-standard/-/eslint-plugin-standard-4.1.0.tgz#0c3bf3a67e853f8bbbc580fb4945fbf16f41b7c5"
+  integrity sha512-ZL7+QRixjTR6/528YNGyDotyffm5OQst/sGxKDwGb9Uqs4In5Egi4+jbobhqJoyoCM6/7v/1A5fhQ7ScMtDjaQ==
 
 eslint-scope@^5.0.0, eslint-scope@^5.1.1:
   version "5.1.1"
@@ -4086,10 +4086,10 @@ stack-utils@^2.0.2:
   dependencies:
     escape-string-regexp "^2.0.0"
 
-standard-engine-ts@0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/standard-engine-ts/-/standard-engine-ts-0.1.6.tgz#893a50a2b83838aba5a13a3e4e3ac7300cef4bf0"
-  integrity sha512-/CFi/23QSVts+aX6TK7bvvyYX3bGdWQUKtSFJsHrOAc6He/j58QY8jgkupJb4/zmF+Uo0qBfOj72hATR0mzALQ==
+standard-engine-ts@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/standard-engine-ts/-/standard-engine-ts-0.2.1.tgz#287eaacf361f157774d64f99edfc11db11ceee40"
+  integrity sha512-O2snW49+fMlWBwpAkV/pIAawtINcbSF6gB0ymwMDoIB5wmPLLhgYptTxaLOFzA2tQu/lbVU6Tc5vrO+dBWQUmA==
   dependencies:
     "@types/eslint" "7.2.4"
     minimist "1.2.5"
@@ -4336,10 +4336,10 @@ ts-jest@26.4.4:
     semver "7.x"
     yargs-parser "20.x"
 
-ts-standardx@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/ts-standardx/-/ts-standardx-0.2.0.tgz#34c1ed2045ee1c5d5c57e5ecc26aa6ea50421198"
-  integrity sha512-sJjhvqC/ImEA84DvtObH+z8LcySH5j1hDoyq61vZkhIy39Q1kifdKRWjyf4Alki7A4JYHtiNeo29/Jky0ec4mg==
+ts-standardx@0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/ts-standardx/-/ts-standardx-0.3.1.tgz#20a86ce49cab161b30d8bb57f56732ab4478b1bd"
+  integrity sha512-Go5xfEb053pdjMTHtwuqBfd/RMZPEPA+Ru63mviHW8RMJnvvKIib3FhjkJncSEMLOmAvk3gxw1p9psEWuYKlyQ==
   dependencies:
     "@typescript-eslint/eslint-plugin" "4.7.0"
     "@typescript-eslint/parser" "4.7.0"
@@ -4351,9 +4351,9 @@ ts-standardx@0.2.0:
     eslint-plugin-node "11.1.0"
     eslint-plugin-prettier "3.1.4"
     eslint-plugin-promise "4.2.1"
-    eslint-plugin-standard "4.0.2"
+    eslint-plugin-standard "4.1.0"
     prettier "2.1.2"
-    standard-engine-ts "0.1.6"
+    standard-engine-ts "0.2.1"
 
 tsconfig-paths@^3.9.0:
   version "3.9.0"
