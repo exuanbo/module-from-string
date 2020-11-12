@@ -1,15 +1,23 @@
+import { Module } from 'module'
 import { createContext, runInContext } from 'vm'
 
-export const requireFromString = (code: string): any => {
-  const context = createContext({ module: { exports: {} }, exports: {} })
+export const requireFromString = (
+  code: string,
+  globals: { [key: string]: unknown } = {}
+): any => {
+  // eslint-disable-next-line symbol-description
+  const _module = new Module(Symbol().toString())
+
+  const context = createContext({
+    __dirname,
+    __filename,
+    exports: _module.exports,
+    module: _module,
+    require,
+    ...globals
+  })
 
   runInContext(code, context)
 
-  if (Object.keys(context.exports).length > 0) {
-    context.module.exports = context.exports
-  }
-
-  const { exports } = context.module
-
-  return exports.default ?? exports
+  return context.module.exports
 }
