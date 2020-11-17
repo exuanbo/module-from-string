@@ -5,6 +5,11 @@ export const requireFromString = (
   code: string,
   globals: { [object: string]: unknown } = {}
 ): any => {
+  const argType = typeof code
+  if (argType !== 'string') {
+    throw new Error(`Argument must be string, not '${argType}'.`)
+  }
+
   const _module = new Module(Symbol('module').toString())
 
   const context = createContext({
