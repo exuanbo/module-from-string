@@ -31,3 +31,14 @@ it('should work with nested require', () => {
   const res = requireFromString(code, { process })
   expect(res).toBe('hello')
 })
+
+it('should have meaningful error message', () => {
+  expect.assertions(1)
+  try {
+    requireFromString("throw new Error('Boom!')")
+  } catch (err) {
+    expect(
+      err.stack.search(/module-from-string\/test\/index\.test\.ts:38:5/)
+    ).toBeGreaterThan(-1)
+  }
+})
