@@ -12,7 +12,7 @@
     "build": "yarn clean && yarn dts && yarn bundle",
     "lint": "ts-standardx",
     "lint:fix": "ts-standardx --fix",
-    "test": "yarn build && yarn lint && jest --no-cache"
+    "test": "yarn lint && yarn build && jest --no-cache"
   },
   "repository": {
     "type": "git",
