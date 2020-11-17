@@ -3,10 +3,9 @@ import { createContext, runInContext } from 'vm'
 
 export const requireFromString = (
   code: string,
-  globals: { [key: string]: unknown } = {}
+  globals: { [object: string]: unknown } = {}
 ): any => {
-  // eslint-disable-next-line symbol-description
-  const _module = new Module(Symbol().toString())
+  const _module = new Module(Symbol('module').toString())
 
   const context = createContext({
     __dirname,
