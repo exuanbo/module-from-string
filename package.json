@@ -28,7 +28,9 @@
     "url": "https://github.com/exuanbo/module-from-string/issues"
   },
   "homepage": "https://github.com/exuanbo/module-from-string#readme",
-  "dependencies": {},
+  "dependencies": {
+    "esbuild": "0.8.15"
+  },
   "devDependencies": {
     "@rollup/plugin-typescript": "6.1.0",
     "@types/jest": "26.0.15",
