@@ -18,13 +18,18 @@ it('should work with relative require in file', () => {
   expect(res).toBe('hi')
 })
 
+it('should work with provided globals', () => {
+  const res = requireFromString('module.exports = process.cwd()', { process })
+  expect(res).toBe(process.cwd())
+})
+
 it('should have meaningful error message', () => {
   expect.assertions(1)
   try {
     requireFromString("throw new Error('Boom!')")
   } catch (err) {
     expect(
-      err.stack.search(/module-from-string\/__tests__\/require\.test\.ts:24:5/)
+      err.stack.search(/module-from-string\/__tests__\/require\.test\.ts:29:5/)
     ).toBeGreaterThan(-1)
   }
 })
