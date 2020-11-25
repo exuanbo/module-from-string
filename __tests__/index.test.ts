@@ -5,7 +5,7 @@ import { requireFromString } from '../src/index'
 it('should throw error if argument is not string', () => {
   expect.assertions(1)
   try {
-    // @ts-expect-error
+    // @ts-expect-error wrong argument type
     requireFromString(module)
   } catch (err) {
     expect(err.message).toBe("Argument must be string, not 'object'.")
