@@ -1,0 +1,8 @@
+__tests__/fixtures/
+.cache/
+.github/
+.vscode/
+jest.config.js
+rollup.config.js
+src/
+tsconfig.json
