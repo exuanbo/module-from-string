@@ -3,7 +3,7 @@ import { createContext, runInContext } from 'vm'
 
 export const requireFromString = (
   code: string,
-  globals: { [object: string]: unknown } = {}
+  globals: Record<string, unknown> = {}
 ): any => {
   const argType = typeof code
   if (argType !== 'string') {
