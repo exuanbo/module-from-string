@@ -1,1 +1,1 @@
-module.exports = 'hello'
+exports.salute = 'hi'
