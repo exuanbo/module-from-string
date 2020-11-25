@@ -23,13 +23,27 @@ it('should work with provided globals', () => {
   expect(res).toBe(process.cwd())
 })
 
+it('should work with require external module', () => {
+  const code = `const { transformSync } = require('esbuild')
+const { code } = transformSync('enum Salute { Hi }', { loader: 'ts' })
+module.exports = code
+`
+  const transformedCode = `var Salute;
+(function(Salute2) {
+  Salute2[Salute2["Hi"] = 0] = "Hi";
+})(Salute || (Salute = {}));
+`
+  const res = requireFromString(code)
+  expect(res).toBe(transformedCode)
+})
+
 it('should have meaningful error message', () => {
   expect.assertions(1)
   try {
     requireFromString("throw new Error('Boom!')")
   } catch (err) {
     expect(
-      err.stack.search(/module-from-string\/__tests__\/require\.test\.ts:29:5/)
+      err.stack.search(/module-from-string\/__tests__\/require\.test\.ts:43:5/)
     ).toBeGreaterThan(-1)
   }
 })

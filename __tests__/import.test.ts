@@ -18,3 +18,16 @@ it('should work with relative require in file', () => {
   })
   expect(res.salute).toBe('hi')
 })
+
+it('should work with import external module', () => {
+  const code = `import { transformSync } from 'esbuild'
+export const { code } = transformSync('enum Salute { Hi }', { loader: 'ts' })
+`
+  const transformedCode = `var Salute;
+(function(Salute2) {
+  Salute2[Salute2["Hi"] = 0] = "Hi";
+})(Salute || (Salute = {}));
+`
+  const res = importFromString({ code })
+  expect(res.code).toBe(transformedCode)
+})
