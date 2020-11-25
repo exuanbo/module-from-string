@@ -8,7 +8,7 @@ export const requireFromString = (
 ): any => {
   checkArg(code)
 
-  const _module = new Module(Symbol('module').toString())
+  const _module = new Module(String(new Date().valueOf()))
 
   const context = createContext({
     __dirname,
