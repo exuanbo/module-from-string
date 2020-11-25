@@ -25,7 +25,7 @@ it('should work with exports shortcut', () => {
 
 it('should work with nested require', () => {
   const code = fs.readFileSync(
-    path.join(process.cwd(), 'test/fixtures/module.js'),
+    path.join(__dirname, 'fixtures/module.js'),
     'utf8'
   )
   const res = requireFromString(code, { process })
@@ -38,7 +38,7 @@ it('should have meaningful error message', () => {
     requireFromString("throw new Error('Boom!')")
   } catch (err) {
     expect(
-      err.stack.search(/module-from-string\/test\/index\.test\.ts:38:5/)
+      err.stack.search(/module-from-string\/__tests__\/index\.test\.ts:38:5/)
     ).toBeGreaterThan(-1)
   }
 })
