@@ -1,13 +1,10 @@
 {
   "name": "module-from-string",
   "version": "0.0.0",
-  "description": "",
+  "description": "Load module from string, require and import.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "clean": "rimraf .cache dist",
     "dts": "tsc -d --emitDeclarationOnly --declarationDir .cache",
@@ -21,7 +18,17 @@
     "type": "git",
     "url": "git+https://github.com/exuanbo/module-from-string.git"
   },
-  "keywords": [],
+  "keywords": [
+    "load",
+    "module",
+    "require",
+    "exports",
+    "import",
+    "export",
+    "string",
+    "vm",
+    "esbuild"
+  ],
   "author": "exuanbo",
   "license": "MIT",
   "bugs": {
