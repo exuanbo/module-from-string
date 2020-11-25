@@ -11,7 +11,7 @@ interface ImprotOptions {
 export const importFromString = ({
   code,
   transformOptions,
-  globals
+  globals = {}
 }: ImprotOptions): any => {
   checkArg(code)
 
