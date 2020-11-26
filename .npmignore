@@ -1,7 +1,7 @@
 __tests__/fixtures/
 .cache/
-.github/
 .vscode/
+coverage/
 jest.config.js
 rollup.config.js
 src/
