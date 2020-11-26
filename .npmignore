@@ -1,4 +1,5 @@
 .cache/
+.github/
 .vscode/
 coverage/
 jest.config.js
