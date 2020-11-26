@@ -5,6 +5,9 @@
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "directories": {
+    "test": "__tests__"
+  },
   "scripts": {
     "clean": "rimraf .cache dist",
     "dts": "tsc -d --emitDeclarationOnly --declarationDir .cache",
