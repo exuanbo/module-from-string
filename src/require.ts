@@ -11,8 +11,6 @@ export const requireFromString = (
   const _module = new Module(String(new Date().valueOf()))
 
   const context = createContext({
-    __dirname,
-    __filename,
     exports: _module.exports,
     module: _module,
     require,

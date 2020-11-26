@@ -66,8 +66,6 @@ Underneath the hood, it uses Node.js built-in `vm` module to execute code from s
 const _module = new Module(String(new Date().valueOf()))
 
 const context = vm.createContext({
-  __dirname,
-  __filename,
   exports: _module.exports,
   module: _module,
   require,
