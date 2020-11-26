@@ -30,8 +30,10 @@ const { requireFromString, importFromString } = require('module-from-string')
 requireFromString("module.exports = 'hi'") // => 'hi'
 requireFromString("exports.salute = 'hi'") // => { salute: 'hi' }
 
-importFromString({ code: "export default 'hi'" }) // => { default: 'hi' }
-importFromString({ code: "export const salute = 'hi'" }) // => { salute: 'hi' }
+;(async () => {
+  await importFromString({ code: "export default 'hi'" }) // => { default: 'hi' }
+  await importFromString({ code: "export const salute = 'hi'" }) // => { salute: 'hi' }
+})()
 ```
 
 ## API
@@ -53,14 +55,19 @@ declare const importFromString: ({
   code,
   transformOptions,
   globals
+}: ImprotOptions) => Promise<any>
+declare const importFromStringSync: ({
+  code,
+  transformOptions,
+  globals
 }: ImprotOptions) => any
 
-export { importFromString, requireFromString }
+export { importFromString, importFromStringSync, requireFromString }
 ```
 
 ### globals?
 
-Underneath the hood, it uses Node.js built-in `vm` module to execute code from string.
+Underneath the hood, `module-from-string` uses Node.js built-in `vm` module to execute code.
 
 ```ts
 const _module = new Module(String(new Date().valueOf()))
@@ -75,12 +82,12 @@ const context = vm.createContext({
 vm.runInContext(code, context)
 ```
 
-By default, only above variables are passed into the created `Context`. In order to use other global objects you need to add them to option `globals`.
+By default, only above variables are passed into the `contextObject`. In order to use other global objects you need to add them to option `globals`.
 
 ```js
 requireFromString('module.exports = process.cwd()', { process })
 
-importFromString({
+importFromStringSync({
   code: 'export default process.cwd()',
   globals: { process }
 })
@@ -88,10 +95,10 @@ importFromString({
 
 ### transformOptions?
 
-As bundled `index.d.ts` above, it uses `esbuild` to transform ES Module syntax to CommonJS. So it can do much more by providing transform options to esbuild. See [documentation](https://esbuild.github.io/api/#transform-api).
+As bundled `index.d.ts` above, `importFromString` uses esbuild to transform ES Module syntax to CommonJS. So it can do much more by providing transform options to esbuild. See [esbuild Transform API](https://esbuild.github.io/api/#transform-api) for documentation.
 
 ```js
-const { salute } = importFromString({
+const { salute } = importFromStringSync({
   code: "export const salute: string = () => 'hi'",
   transformOptions: { loader: 'ts' }
 })
