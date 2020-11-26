@@ -1,20 +1,11 @@
-<h1 align="center">module-from-string</h1>
+# module-from-string
 
-<p align="center">
 > Load module from string, require and import.
-</p>
 
-<p align="center">
-<a href="https://www.npmjs.com/package/module-from-string">
-<img alt="npm" src="https://img.shields.io/npm/v/module-from-string">
-</a>
-<a href="https://github.com/exuanbo/module-from-string/actions?query=workflow">
-<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/exuanbo/module-from-string/Node.js%20CI/main">
-</a>
-<a href="https://liberamanifesto.com">
-<img alt="The Libera Manifesto" src="https://img.shields.io/badge/libera-manifesto-lightgrey.svg">
-</a>
-</p>
+[![npm](https://img.shields.io/npm/v/module-from-string)](https://www.npmjs.com/package/module-from-string)
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/exuanbo/module-from-string/Node.js%20CI/main)](https://github.com/exuanbo/module-from-string/actions?query=workflow)
+[![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
+
 
 ## Install
 
@@ -65,7 +56,7 @@ declare const importFromStringSync: ({
 export { importFromString, importFromStringSync, requireFromString }
 ```
 
-### globals?
+### globals
 
 Underneath the hood, `module-from-string` uses Node.js built-in `vm` module to execute code.
 
@@ -93,7 +84,7 @@ importFromStringSync({
 })
 ```
 
-### transformOptions?
+### transformOptions
 
 As bundled `index.d.ts` above, `importFromString` uses esbuild to transform ES Module syntax to CommonJS. So it can do much more by providing transform options to esbuild. See [esbuild Transform API](https://esbuild.github.io/api/#transform-api) for documentation.
 
