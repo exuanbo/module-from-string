@@ -21,11 +21,10 @@
   "keywords": [
     "load",
     "module",
-    "require",
-    "exports",
-    "import",
-    "export",
     "string",
+    "require",
+    "require-from-string",
+    "import",
     "vm",
     "esbuild"
   ],
