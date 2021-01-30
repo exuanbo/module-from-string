@@ -41,7 +41,7 @@
     "esbuild": "0.8.15"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "6.1.0",
+    "@rollup/plugin-typescript": "8.1.1",
     "@types/jest": "26.0.20",
     "@types/node": "14.14.20",
     "jest": "26.6.3",
