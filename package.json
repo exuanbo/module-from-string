@@ -12,10 +12,10 @@
     "clean": "rimraf .cache dist",
     "dts": "tsc -d --emitDeclarationOnly --declarationDir .cache",
     "bundle": "rollup -c",
-    "build": "yarn clean && yarn dts && yarn bundle",
+    "build": "npm run clean && npm run dts && npm run bundle",
     "lint": "ts-standardx",
     "lint:fix": "ts-standardx --fix",
-    "test": "yarn lint && yarn build && jest --no-cache"
+    "test": "npm run lint && npm run build && jest --no-cache"
   },
   "repository": {
     "type": "git",
