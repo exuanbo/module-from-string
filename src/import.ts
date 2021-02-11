@@ -1,11 +1,9 @@
 import { TransformOptions, transform, transformSync } from 'esbuild'
-import { requireFromString } from './require'
+import { Options, requireFromString } from './require'
 import { checkArg } from './utils'
 
-interface ImprotOptions {
-  code: string
+interface ImprotOptions extends Options {
   transformOptions?: TransformOptions
-  globals?: Record<string, unknown>
 }
 
 export const importFromString = async ({
@@ -20,7 +18,7 @@ export const importFromString = async ({
     ...transformOptions
   })
 
-  return requireFromString(transformedCode, globals)
+  return requireFromString({ code: transformedCode, globals })
 }
 
 export const importFromStringSync = ({
@@ -35,5 +33,5 @@ export const importFromStringSync = ({
     ...transformOptions
   })
 
-  return requireFromString(transformedCode, globals)
+  return requireFromString({ code: transformedCode, globals })
 }
