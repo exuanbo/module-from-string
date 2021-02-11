@@ -1,6 +1,6 @@
-export const checkArg = (arg: unknown): void | never => {
-  const argType = typeof arg
-  if (argType !== 'string') {
-    throw new Error(`Argument must be string, not '${argType}'.`)
-  }
-}
+import { Options } from './require'
+import { ImportOptions } from './import'
+
+export const generateOptions = (
+  options: string | Options | ImportOptions
+): ImportOptions => (typeof options === 'string' ? { code: options } : options)
