@@ -7,7 +7,6 @@
 [![Codecov branch](https://img.shields.io/codecov/c/gh/exuanbo/module-from-string/main?token=B66P1ZSBLD)](https://codecov.io/gh/exuanbo/module-from-string)
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
-
 ## Install
 
 ```sh
@@ -23,8 +22,8 @@ requireFromString("module.exports = 'hi'") // => 'hi'
 requireFromString("exports.salute = 'hi'") // => { salute: 'hi' }
 
 ;(async () => {
-  await importFromString({ code: "export default 'hi'" }) // => { default: 'hi' }
-  await importFromString({ code: "export const salute = 'hi'" }) // => { salute: 'hi' }
+  await importFromString("export default 'hi'" ) // => { default: 'hi' }
+  await importFromString("export const salute = 'hi'") // => { salute: 'hi' }
 })()
 ```
 
@@ -33,26 +32,19 @@ requireFromString("exports.salute = 'hi'") // => { salute: 'hi' }
 ```ts
 import { TransformOptions } from 'esbuild'
 
-declare const requireFromString: (
-  code: string,
-  globals?: Record<string, unknown>
-) => any
-
-interface ImprotOptions {
+interface Options {
   code: string
-  transformOptions?: TransformOptions
   globals?: Record<string, unknown>
 }
-declare const importFromString: ({
-  code,
-  transformOptions,
-  globals
-}: ImprotOptions) => Promise<any>
-declare const importFromStringSync: ({
-  code,
-  transformOptions,
-  globals
-}: ImprotOptions) => any
+declare const requireFromString: (options: string | Options) => any
+
+interface ImportOptions extends Options {
+  transformOptions?: TransformOptions
+}
+declare const importFromString: (
+  options: string | ImportOptions
+) => Promise<any>
+declare const importFromStringSync: (options: string | ImportOptions) => any
 
 export { importFromString, importFromStringSync, requireFromString }
 ```
@@ -87,11 +79,11 @@ importFromStringSync({
 
 ### transformOptions
 
-As bundled `index.d.ts` above, `importFromString` uses esbuild to transform ES Module syntax to CommonJS. So it can do much more by providing transform options to esbuild. See [esbuild Transform API](https://esbuild.github.io/api/#transform-api) for documentation.
+Function `importFromString` and `importFromStringSync` use esbuild to transform ES Module syntax to CommonJS. So it can do much more by providing transform options to esbuild. See [esbuild Transform API](https://esbuild.github.io/api/#transform-api) for documentation.
 
 ```js
 const { salute } = importFromStringSync({
-  code: "export const salute: string = () => 'hi'",
+  code: "export const salute: () => string = () => 'hi'",
   transformOptions: { loader: 'ts' }
 })
 
