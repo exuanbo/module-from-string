@@ -1,1 +1,1 @@
-exports.salute = 'hi'
+exports.greet = 'hi'

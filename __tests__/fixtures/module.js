@@ -1,1 +1,1 @@
-module.exports = require('./submodule').salute
+module.exports = require('./submodule').greet
