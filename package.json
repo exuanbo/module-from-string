@@ -1,6 +1,6 @@
 {
   "name": "module-from-string",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Load module from string, require and import.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
