@@ -1,5 +1,6 @@
 import { Module } from 'module'
 import { createContext, runInContext } from 'vm'
+import { nanoid } from 'nanoid'
 import { generateOptions } from './utils'
 
 export interface Options {
@@ -10,7 +11,7 @@ export interface Options {
 export const requireFromString = (options: string | Options): any => {
   const { code, globals = {} } = generateOptions(options)
 
-  const _module = new Module(String(new Date().valueOf()))
+  const _module = new Module(nanoid())
 
   const context = createContext({
     exports: _module.exports,
