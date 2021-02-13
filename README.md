@@ -19,11 +19,11 @@ npm install module-from-string
 const { requireFromString, importFromString } = require('module-from-string')
 
 requireFromString("module.exports = 'hi'") // => 'hi'
-requireFromString("exports.salute = 'hi'") // => { salute: 'hi' }
+requireFromString("exports.greet = 'hi'") // => { greet: 'hi' }
 
 ;(async () => {
   await importFromString("export default 'hi'" ) // => { default: 'hi' }
-  await importFromString("export const salute = 'hi'") // => { salute: 'hi' }
+  await importFromString("export const greet = 'hi'") // => { greet: 'hi' }
 })()
 ```
 
@@ -82,12 +82,12 @@ importFromStringSync({
 Function `importFromString` and `importFromStringSync` use esbuild to transform ES Module syntax to CommonJS. So it can do much more by providing transform options to esbuild. See [esbuild Transform API](https://esbuild.github.io/api/#transform-api) for documentation.
 
 ```js
-const { salute } = importFromStringSync({
-  code: "export const salute: () => string = () => 'hi'",
+const { greet } = importFromStringSync({
+  code: "export const greet: () => string = () => 'hi'",
   transformOptions: { loader: 'ts' }
 })
 
-salute() // => 'hi'
+greet() // => 'hi'
 ```
 
 ## License
