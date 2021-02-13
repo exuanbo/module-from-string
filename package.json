@@ -38,14 +38,15 @@
   },
   "homepage": "https://github.com/exuanbo/module-from-string#readme",
   "dependencies": {
-    "esbuild": "0.8.43"
+    "esbuild": "0.8.45",
+    "nanoid": "3.1.20"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "8.1.1",
     "@types/jest": "26.0.20",
-    "@types/node": "14.14.25",
+    "@types/node": "14.14.27",
     "jest": "26.6.3",
-    "rollup": "2.38.5",
+    "rollup": "2.39.0",
     "rollup-plugin-dts": "2.0.1",
     "ts-jest": "26.5.1",
     "ts-standardx": "0.6.0",
