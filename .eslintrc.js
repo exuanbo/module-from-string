@@ -1,1 +1,3 @@
-module.exports = require('ts-standardx/.eslintrc.js')
+module.exports = {
+  extends: ['./node_modules/ts-standardx/.eslintrc.js']
+}
