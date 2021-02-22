@@ -16,7 +16,7 @@ npm install module-from-string
 ## Usage
 
 ```js
-const { requireFromString, importFromString } = require('module-from-string')
+import { requireFromString, importFromString } from 'module-from-string'
 
 requireFromString("module.exports = 'hi'") // => 'hi'
 requireFromString("exports.greet = 'hi'") // => { greet: 'hi' }
@@ -54,22 +54,23 @@ export { importFromString, importFromStringSync, requireFromString }
 Underneath the hood, `module-from-string` uses Node.js built-in `vm` module to execute code.
 
 ```ts
-const _module = new Module(String(new Date().valueOf()))
+const contextModule = new Module(nanoid())
 
-const context = vm.createContext({
-  exports: _module.exports,
-  module: _module,
+vm.runInNewContext(code, {
+  exports: contextModule.exports,
+  module: contextModule,
   require,
   ...globals
 })
-
-vm.runInContext(code, context)
 ```
 
-By default, only above variables are passed into the `contextObject`. In order to use other global objects you need to add them to option `globals`.
+By default, only the above variables are passed into the `contextObject`. In order to use other global objects and built-in modules you need to add them to option `globals`.
 
 ```js
-requireFromString('module.exports = process.cwd()', { process })
+requireFromString({
+  code: 'module.exports = process.cwd()',
+  globals: { process }
+})
 
 importFromStringSync({
   code: 'export default process.cwd()',
