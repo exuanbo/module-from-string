@@ -13,7 +13,7 @@ const generateTransformOptions = (
 export const importFromString = async (
   options: string | ImportOptions
 ): Promise<any> => {
-  const { code, transformOptions = {}, globals = {} } = generateOptions(options)
+  const { code, globals, transformOptions = {} } = generateOptions(options)
 
   const transformResult = await transform(
     code,
@@ -24,7 +24,7 @@ export const importFromString = async (
 }
 
 export const importFromStringSync = (options: string | ImportOptions): any => {
-  const { code, transformOptions = {}, globals = {} } = generateOptions(options)
+  const { code, globals, transformOptions = {} } = generateOptions(options)
 
   const transformResult = transformSync(
     code,

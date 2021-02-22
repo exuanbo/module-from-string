@@ -1,6 +1,9 @@
 import { Options } from './require'
 import { ImportOptions } from './import'
 
-export const generateOptions = (
-  options: string | Options | ImportOptions
-): ImportOptions => (typeof options === 'string' ? { code: options } : options)
+export function generateOptions(options: string | ImportOptions): ImportOptions
+export function generateOptions(options: string | Options): Options
+
+export function generateOptions(options: string | Options): Options {
+  return typeof options === 'string' ? { code: options } : options
+}

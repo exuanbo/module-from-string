@@ -9,7 +9,7 @@ export interface Options {
 }
 
 export const requireFromString = (options: string | Options): any => {
-  const { code, globals = {} } = generateOptions(options)
+  const { code, globals } = generateOptions(options)
 
   const contextModule = new Module(nanoid())
 
