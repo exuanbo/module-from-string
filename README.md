@@ -93,4 +93,4 @@ greet() // => 'hi'
 
 ## License
 
-[MIT License](https://github.com/exuanbo/module-from-string/blob/main/LICENSE) © 2020 [Exuanbo](https://github.com/exuanbo)
+[MIT License](https://github.com/exuanbo/module-from-string/blob/main/LICENSE) © 2021 [Exuanbo](https://github.com/exuanbo)
