@@ -13,12 +13,16 @@ export const requireFromString = (options: string | Options): any => {
 
   const contextModule = new Module(nanoid())
 
-  runInNewContext(code, {
-    exports: contextModule.exports,
-    module: contextModule,
-    require,
-    ...globals
-  })
+  runInNewContext(
+    code,
+    {
+      exports: contextModule.exports,
+      module: contextModule,
+      require,
+      ...globals
+    },
+    { microtaskMode: 'afterEvaluate' }
+  )
 
   return contextModule.exports
 }
