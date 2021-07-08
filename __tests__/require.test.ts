@@ -51,6 +51,6 @@ it('should have meaningful error message', () => {
   } catch (err) {
     expect(
       err.stack.search(/module-from-string\/__tests__\/require\.test\.ts:50:5/)
-    ).toBeGreaterThan(-1)
+    ).toBeGreaterThan(0)
   }
 })

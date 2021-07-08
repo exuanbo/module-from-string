@@ -15,7 +15,7 @@ describe('importFromString', () => {
   it('should work with relative require in file', async () => {
     const modulePath = path.join(process.cwd(), '__tests__/fixtures/module.js')
     const res = await importFromString(
-      `import { default as greet } from '${modulePath}'\nexport { greet }`
+      `export { default as greet } from '${modulePath}'`
     )
     expect(res.greet).toBe('hi')
   })
@@ -56,7 +56,7 @@ describe('importFromStringSync', () => {
   it('should work with relative require in file', () => {
     const modulePath = path.join(process.cwd(), '__tests__/fixtures/module.js')
     const res = importFromStringSync(
-      `import { default as greet } from '${modulePath}'\nexport { greet }`
+      `export { default as greet } from '${modulePath}'`
     )
     expect(res.greet).toBe('hi')
   })
