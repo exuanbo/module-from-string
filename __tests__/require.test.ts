@@ -12,8 +12,14 @@ it('should work with exports shortcut', () => {
   expect(res.hi).toBe('hi')
 })
 
-it('should work with relative require in file', () => {
-  const modulePath = path.join(process.cwd(), '__tests__/fixtures/module.js')
+it('should work with relative path import', () => {
+  const modulePath = './fixtures/module.js'
+  const res = requireFromString(`module.exports = require('${modulePath}')`)
+  expect(res).toBe('hi')
+})
+
+it('should work with absolute path import', () => {
+  const modulePath = path.join(__dirname, 'fixtures/module.js')
   const res = requireFromString(`module.exports = require('${modulePath}')`)
   expect(res).toBe('hi')
 })
@@ -45,7 +51,7 @@ it('should have meaningful error message', () => {
     requireFromString("throw new Error('Boom!')")
   } catch (err) {
     expect(
-      err.stack.search(/module-from-string\/__tests__\/require\.test\.ts:45:5/)
+      err.stack.search(/module-from-string\/__tests__\/require\.test\.ts:51:5/)
     ).toBeGreaterThan(0)
   }
 })

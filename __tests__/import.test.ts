@@ -12,8 +12,16 @@ describe('importFromString', () => {
     expect(res.default).toBe('hi')
   })
 
-  it('should work with relative require in file', async () => {
-    const modulePath = path.join(process.cwd(), '__tests__/fixtures/module.js')
+  it('should work with relative path import', async () => {
+    const modulePath = './fixtures/module.js'
+    const res = await importFromString(
+      `export { default as greet } from '${modulePath}'`
+    )
+    expect(res.greet).toBe('hi')
+  })
+
+  it('should work with absolute path import', async () => {
+    const modulePath = path.join(__dirname, 'fixtures/module.js')
     const res = await importFromString(
       `export { default as greet } from '${modulePath}'`
     )
@@ -53,8 +61,16 @@ describe('importFromStringSync', () => {
     expect(res.default).toBe('hi')
   })
 
-  it('should work with relative require in file', () => {
-    const modulePath = path.join(process.cwd(), '__tests__/fixtures/module.js')
+  it('should work with relative path import', () => {
+    const modulePath = './fixtures/module.js'
+    const res = importFromStringSync(
+      `export { default as greet } from '${modulePath}'`
+    )
+    expect(res.greet).toBe('hi')
+  })
+
+  it('should work with absolute path import', () => {
+    const modulePath = path.join(__dirname, 'fixtures/module.js')
     const res = importFromStringSync(
       `export { default as greet } from '${modulePath}'`
     )
