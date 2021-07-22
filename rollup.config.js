@@ -4,7 +4,7 @@ import pkg from './package.json'
 
 export default [
   {
-    external: ['module', 'vm', ...Object.keys(pkg.dependencies)],
+    external: ['module', 'path', 'vm', ...Object.keys(pkg.dependencies)],
     input: 'src/index.ts',
     plugins: [typescript()],
     output: [
