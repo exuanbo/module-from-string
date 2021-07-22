@@ -31,7 +31,6 @@ export const requireFromString = (code: string, options: Options = {}): any => {
     { microtaskMode: 'afterEvaluate' }
   )
 
-  mainModule.children = mainModule.children.filter(m => m !== contextModule)
-
+  contextModule.loaded = true
   return contextModule.exports
 }
