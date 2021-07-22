@@ -1,6 +1,6 @@
 # module-from-string
 
-> Load module from string, require and import.
+> Load module from string using `require` or `import`.
 
 [![npm](https://img.shields.io/npm/v/module-from-string)](https://www.npmjs.com/package/module-from-string)
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/exuanbo/module-from-string/Node.js%20CI/main)](https://github.com/exuanbo/module-from-string/actions?query=workflow)
@@ -16,15 +16,23 @@ npm install module-from-string
 ## Usage
 
 ```js
-import { requireFromString, importFromString } from 'module-from-string'
+import {
+  requireFromString,
+  importFromString,
+  importFromStringSync
+} from 'module-from-string'
 
 requireFromString("module.exports = 'hi'") // => 'hi'
 requireFromString("exports.greet = 'hi'") // => { greet: 'hi' }
 
 ;(async () => {
-  await importFromString("export default 'hi'" ) // => { default: 'hi' }
-  await importFromString("export const greet = 'hi'") // => { greet: 'hi' }
+  await importFromString("export default 'hi'") // => { default: 'hi' }
 })()
+
+importFromStringSync(
+  "export const greet = Buffer.from([0x68, 0x69]).toString('utf8')",
+  { globals: { Buffer } }
+) // => { greet: 'hi' }
 ```
 
 ## API
@@ -33,20 +41,26 @@ requireFromString("exports.greet = 'hi'") // => { greet: 'hi' }
 import { TransformOptions } from 'esbuild'
 
 interface Options {
-  code: string
   globals?: Record<string, unknown>
 }
-declare const requireFromString: (options: string | Options) => any
+
+declare const requireFromString: (code: string, options?: Options) => any
 
 interface ImportOptions extends Options {
   transformOptions?: TransformOptions
 }
-declare const importFromString: (
-  options: string | ImportOptions
-) => Promise<any>
-declare const importFromStringSync: (options: string | ImportOptions) => any
 
-export { importFromString, importFromStringSync, requireFromString }
+declare const importFromString: (
+  code: string,
+  options?: ImportOptions
+) => Promise<any>
+
+declare const importFromStringSync: (
+  code: string,
+  options?: ImportOptions
+) => any
+
+export { requireFromString, importFromString, importFromStringSync }
 ```
 
 ### globals
@@ -54,28 +68,27 @@ export { importFromString, importFromStringSync, requireFromString }
 Underneath the hood, `module-from-string` uses Node.js built-in `vm` module to execute code.
 
 ```ts
-const contextModule = new Module(nanoid())
-
-vm.runInNewContext(code, {
-  exports: contextModule.exports,
-  module: contextModule,
-  require,
-  ...globals
-})
+vm.runInNewContext(
+  code,
+  {
+    __dirname: contextModule.path,
+    __filename: contextModule.filename,
+    exports: contextModule.exports,
+    module: contextModule,
+    require: contextModule.require,
+    ...globals
+  },
+  { microtaskMode: 'afterEvaluate' }
+)
 ```
 
 By default, only the above variables are passed into the `contextObject`. In order to use other global objects and built-in modules you need to add them to option `globals`.
 
 ```js
-requireFromString({
-  code: 'module.exports = process.cwd()',
-  globals: { process }
-})
-
-importFromStringSync({
-  code: 'export default process.cwd()',
-  globals: { process }
-})
+requireFromString(
+  'module.exports = process.cwd()',
+  { globals: { process } }
+)// => $PWD
 ```
 
 ### transformOptions
@@ -83,10 +96,10 @@ importFromStringSync({
 Function `importFromString` and `importFromStringSync` use esbuild to transform ES Module syntax to CommonJS. So it can do much more by providing transform options to esbuild. See [esbuild Transform API](https://esbuild.github.io/api/#transform-api) for documentation.
 
 ```js
-const { greet } = importFromStringSync({
-  code: "export const greet: () => string = () => 'hi'",
-  transformOptions: { loader: 'ts' }
-})
+const { greet } = importFromStringSync(
+  "export const greet: () => string = () => 'hi'",
+  { transformOptions: { loader: 'ts' } }
+)
 
 greet() // => 'hi'
 ```
