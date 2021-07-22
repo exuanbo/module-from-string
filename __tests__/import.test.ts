@@ -34,10 +34,10 @@ export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
   })
 
   it('should work if transformOption is provided', async () => {
-    const res = await importFromString({
-      code: "export const greet: () => string = () => 'hi'",
-      transformOptions: { loader: 'ts' }
-    })
+    const res = await importFromString(
+      "export const greet: () => string = () => 'hi'",
+      { transformOptions: { loader: 'ts' } }
+    )
     expect(res.greet()).toBe('hi')
   })
 })
@@ -75,10 +75,10 @@ export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
   })
 
   it('should work if transformOption is provided', async () => {
-    const res = await importFromStringSync({
-      code: "export const greet: () => string = () => 'hi'",
-      transformOptions: { loader: 'ts' }
-    })
+    const res = await importFromStringSync(
+      "export const greet: () => string = () => 'hi'",
+      { transformOptions: { loader: 'ts' } }
+    )
     expect(res.greet()).toBe('hi')
   })
 })

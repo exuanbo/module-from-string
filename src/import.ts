@@ -1,35 +1,34 @@
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { Options, requireFromString } from './require'
-import { generateOptions } from './utils'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
 }
 
-const generateTransformOptions = (
-  transformOptions: TransformOptions
-): TransformOptions => ({ format: 'cjs', ...transformOptions })
-
 export const importFromString = async (
-  options: string | ImportOptions
+  code: string,
+  options: ImportOptions = {}
 ): Promise<any> => {
-  const { code, globals, transformOptions = {} } = generateOptions(options)
+  const { globals, transformOptions = {} } = options
 
-  const transformResult = await transform(
-    code,
-    generateTransformOptions(transformOptions)
-  )
+  const transformResult = await transform(code, {
+    format: 'cjs',
+    ...transformOptions
+  })
 
-  return requireFromString({ code: transformResult.code, globals })
+  return requireFromString(transformResult.code, { globals })
 }
 
-export const importFromStringSync = (options: string | ImportOptions): any => {
-  const { code, globals, transformOptions = {} } = generateOptions(options)
+export const importFromStringSync = (
+  code: string,
+  options: ImportOptions = {}
+): any => {
+  const { globals, transformOptions = {} } = options
 
-  const transformResult = transformSync(
-    code,
-    generateTransformOptions(transformOptions)
-  )
+  const transformResult = transformSync(code, {
+    format: 'cjs',
+    ...transformOptions
+  })
 
-  return requireFromString({ code: transformResult.code, globals })
+  return requireFromString(transformResult.code, { globals })
 }

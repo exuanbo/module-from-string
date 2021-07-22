@@ -1,15 +1,13 @@
 import { Module } from 'module'
 import { runInNewContext } from 'vm'
 import { nanoid } from 'nanoid'
-import { generateOptions } from './utils'
 
 export interface Options {
-  code: string
   globals?: Record<string, unknown>
 }
 
-export const requireFromString = (options: string | Options): any => {
-  const { code, globals } = generateOptions(options)
+export const requireFromString = (code: string, options: Options = {}): any => {
+  const { globals = {} } = options
 
   const contextModule = new Module(nanoid())
 
