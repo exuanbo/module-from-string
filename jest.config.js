@@ -2,5 +2,5 @@ module.exports = {
   collectCoverage: true,
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testRegex: '(__tests__\\/.*?\\.test)\\.tsx?$'
+  testMatch: ['**/__tests__/**/*.(test|spec).[jt]s?(x)']
 }
