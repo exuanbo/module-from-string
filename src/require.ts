@@ -13,6 +13,7 @@ export const requireFromString = (code: string, options: Options = {}): any => {
   const mainModule = require.main!
   const fileName = path.join(mainModule.path, `${nanoid()}.js`)
   const contextModule = new Module(fileName, mainModule)
+
   contextModule.filename = fileName
   contextModule.path = mainModule.path
   contextModule.paths = mainModule.paths
