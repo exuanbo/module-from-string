@@ -10,13 +10,14 @@ export interface Options {
 export const requireFromString = (code: string, options: Options = {}): any => {
   const { globals = {} } = options
 
-  const mainModule = require.main!
-  const fileName = path.join(mainModule.path, `${nanoid()}.js`)
+  const mainModule = require.main ?? undefined
+  const dirName = mainModule?.path ?? path.dirname(process.argv[1])
+  const fileName = path.join(dirName, `${nanoid()}.js`)
   const contextModule = new Module(fileName, mainModule)
 
   contextModule.filename = fileName
-  contextModule.path = mainModule.path
-  contextModule.paths = mainModule.paths
+  contextModule.path = mainModule?.path ?? dirName
+  contextModule.paths = mainModule?.paths ?? []
   contextModule.require = createRequire(fileName)
 
   vm.runInNewContext(
