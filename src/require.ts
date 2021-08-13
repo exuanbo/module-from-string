@@ -4,14 +4,15 @@ import vm from 'vm'
 import { nanoid } from 'nanoid'
 
 export interface Options {
+  dirPath?: string
   globals?: Record<string, unknown>
 }
 
 export const requireFromString = (code: string, options: Options = {}): any => {
-  const { globals = {} } = options
+  const { dirPath, globals = {} } = options
 
   const mainModule = require.main ?? undefined
-  const dirName = mainModule?.path ?? path.dirname(process.argv[1])
+  const dirName = dirPath ?? mainModule?.path ?? path.dirname(process.argv[1])
   const fileName = path.join(dirName, `${nanoid()}.js`)
   const contextModule = new Module(fileName, mainModule)
 
