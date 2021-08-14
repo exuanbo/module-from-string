@@ -29,9 +29,10 @@ export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
 }
 
-export const importFromString = async (code: string, options: ImportOptions = {}): Promise<any> => {
-  const { dirPath, globals, transformOptions } = options
-
+export const importFromString = async (
+  code: string,
+  { dirPath, globals, transformOptions }: ImportOptions = {}
+): Promise<any> => {
   if (isInESModuleScope()) {
     // @ts-expect-error: experimental
     if (vm.Module === undefined) {
@@ -66,7 +67,7 @@ export const importFromString = async (code: string, options: ImportOptions = {}
 
     // @ts-expect-error: experimental
     const linker = async (specifier: string): Promise<vm.Module> => {
-      const importedModulePath = new RegExp(`^[\\.\\${path.sep}]`).test(specifier)
+      const importedModulePath = new RegExp(`^[.\\${path.sep}]`).test(specifier)
         ? path.resolve(dirName, specifier)
         : undefined
       context.__IMPORTS__[specifier] = await import(importedModulePath ?? specifier)
@@ -84,24 +85,23 @@ export const importFromString = async (code: string, options: ImportOptions = {}
         ImportDeclaration(__node) {
           const { specifiers: specifierNodes, source } = __node as ImportDeclarationNode
           if (source.value === specifier) {
-            const namedExports = new Set<string>()
-            let hasDefaultExport = false
+            const namedImports = new Set<string>()
+            let hasDefaultImport = false
             specifierNodes.forEach(specifierNode => {
               if (
                 specifierNode.type === 'ImportDefaultSpecifier' ||
                 specifierNode.imported.name === 'default'
               ) {
-                hasDefaultExport = true
+                hasDefaultImport = true
               } else {
-                namedExports.add(specifierNode.imported.name)
+                namedImports.add(specifierNode.imported.name)
               }
             })
-            if (namedExports.size > 0) {
-              importedModuleContent += `export const { ${[...namedExports].join(
-                ', '
-              )} } = __IMPORTS__['${specifier}']\n`
+            if (namedImports.size > 0) {
+              const names = [...namedImports].join(', ')
+              importedModuleContent += `export const { ${names} } = __IMPORTS__['${specifier}']\n`
             }
-            if (hasDefaultExport) {
+            if (hasDefaultImport) {
               importedModuleContent += `export default __IMPORTS__['${specifier}'].default\n`
             }
           }
@@ -120,25 +120,26 @@ export const importFromString = async (code: string, options: ImportOptions = {}
     return vmModule.namespace
   }
 
-  const transformResult = await transform(code, {
+  ;({ code } = await transform(code, {
     format: 'cjs',
     ...transformOptions
-  })
+  }))
 
-  return requireFromString(transformResult.code, { dirPath, globals })
+  return requireFromString(code, { dirPath, globals })
 }
 
-export const importFromStringSync = (code: string, options: ImportOptions = {}): any => {
+export const importFromStringSync = (
+  code: string,
+  { dirPath, globals, transformOptions }: ImportOptions = {}
+): any => {
   if (isInESModuleScope()) {
     throw new ESModuleNotSupportedError('importFromStringSync')
   }
 
-  const { dirPath, globals, transformOptions = {} } = options
-
-  const transformResult = transformSync(code, {
+  ;({ code } = transformSync(code, {
     format: 'cjs',
     ...transformOptions
-  })
+  }))
 
-  return requireFromString(transformResult.code, { dirPath, globals })
+  return requireFromString(code, { dirPath, globals })
 }
