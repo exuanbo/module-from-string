@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-
     "strict": true,
 
+    "module": "es2020",
     "moduleResolution": "node",
-    "esModuleInterop": true,
 
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "target": "es2017",
+
+    "skipLibCheck": true
   }
 }
