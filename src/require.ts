@@ -2,12 +2,8 @@ import { Module, createRequire } from 'module'
 import path from 'path'
 import vm from 'vm'
 import { nanoid } from 'nanoid'
+import type { Options } from './options'
 import { isInESModuleScope, ESModuleNotSupportedError } from './utils'
-
-export interface Options {
-  dirPath?: string
-  globals?: Record<string, unknown>
-}
 
 export const requireFromString = (code: string, { dirPath, globals }: Options = {}): any => {
   if (isInESModuleScope()) {
