@@ -42,6 +42,9 @@
     "url": "https://github.com/exuanbo/module-from-string/issues"
   },
   "homepage": "https://github.com/exuanbo/module-from-string#readme",
+  "engines": {
+    "node": ">=12.16.0"
+  },
   "dependencies": {
     "@swc/core": "1.2.77",
     "nanoid": "3.1.25"
