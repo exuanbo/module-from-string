@@ -9,20 +9,18 @@ export interface Options {
   globals?: Record<string, unknown>
 }
 
-export const requireFromString = (code: string, options: Options = {}): any => {
+export const requireFromString = (code: string, { dirPath, globals }: Options = {}): any => {
   if (isInESModuleScope()) {
     throw new ESModuleNotSupportedError('requireFromString')
   }
 
-  const { dirPath, globals = {} } = options
-
-  const mainModule = require.main ?? undefined
+  const mainModule = require.main
   const dirName = dirPath ?? mainModule?.path ?? path.dirname(process.argv[1])
   const fileName = path.join(dirName, `${nanoid()}.js`)
   const contextModule = new Module(fileName, mainModule)
 
   contextModule.filename = fileName
-  contextModule.path = mainModule?.path ?? dirName
+  contextModule.path = dirName
   contextModule.paths = mainModule?.paths ?? []
   contextModule.require = createRequire(fileName)
 
