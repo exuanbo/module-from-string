@@ -14,17 +14,13 @@ describe('importFromString', () => {
 
   it('should work with relative path import', async () => {
     const modulePath = './fixtures/module.js'
-    const res = await importFromString(
-      `export { default as greet } from '${modulePath}'`
-    )
+    const res = await importFromString(`export { default as greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
   it('should work with absolute path import', async () => {
     const modulePath = path.join(__dirname, 'fixtures/module.js')
-    const res = await importFromString(
-      `export { default as greet } from '${modulePath}'`
-    )
+    const res = await importFromString(`export { default as greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
@@ -42,10 +38,9 @@ export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
   })
 
   it('should work if transformOption is provided', async () => {
-    const res = await importFromString(
-      "export const greet: () => string = () => 'hi'",
-      { transformOptions: { loader: 'ts' } }
-    )
+    const res = await importFromString("export const greet: () => string = () => 'hi'", {
+      transformOptions: { loader: 'ts' }
+    })
     expect(res.greet()).toBe('hi')
   })
 })
@@ -63,17 +58,13 @@ describe('importFromStringSync', () => {
 
   it('should work with relative path import', () => {
     const modulePath = './fixtures/module.js'
-    const res = importFromStringSync(
-      `export { default as greet } from '${modulePath}'`
-    )
+    const res = importFromStringSync(`export { default as greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
   it('should work with absolute path import', () => {
     const modulePath = path.join(__dirname, 'fixtures/module.js')
-    const res = importFromStringSync(
-      `export { default as greet } from '${modulePath}'`
-    )
+    const res = importFromStringSync(`export { default as greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
@@ -91,10 +82,9 @@ export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
   })
 
   it('should work if transformOption is provided', async () => {
-    const res = await importFromStringSync(
-      "export const greet: () => string = () => 'hi'",
-      { transformOptions: { loader: 'ts' } }
-    )
+    const res = await importFromStringSync("export const greet: () => string = () => 'hi'", {
+      transformOptions: { loader: 'ts' }
+    })
     expect(res.greet()).toBe('hi')
   })
 })

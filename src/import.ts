@@ -6,11 +6,7 @@ import { nanoid } from 'nanoid'
 import acorn, { parse } from 'acorn'
 import { simple as simpleWalk } from 'acorn-walk'
 import { Options, requireFromString } from './require'
-import {
-  isInESModuleScope,
-  ESModuleNotSupportedError,
-  VmModuleNotEnabledError
-} from './utils'
+import { isInESModuleScope, ESModuleNotSupportedError, VmModuleNotEnabledError } from './utils'
 
 interface ImportDeclarationNode extends acorn.Node {
   specifiers: Array<
@@ -33,10 +29,7 @@ export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
 }
 
-export const importFromString = async (
-  code: string,
-  options: ImportOptions = {}
-): Promise<any> => {
+export const importFromString = async (code: string, options: ImportOptions = {}): Promise<any> => {
   const { dirPath, globals, transformOptions } = options
 
   if (isInESModuleScope()) {
@@ -73,14 +66,10 @@ export const importFromString = async (
 
     // @ts-expect-error: experimental
     const linker = async (specifier: string): Promise<vm.Module> => {
-      const importedModulePath = new RegExp(`^[\\.\\${path.sep}]`).test(
-        specifier
-      )
+      const importedModulePath = new RegExp(`^[\\.\\${path.sep}]`).test(specifier)
         ? path.resolve(dirName, specifier)
         : undefined
-      context.__IMPORTS__[specifier] = await import(
-        importedModulePath ?? specifier
-      )
+      context.__IMPORTS__[specifier] = await import(importedModulePath ?? specifier)
 
       if (acornNode === undefined) {
         acornNode = parse(code, {
@@ -93,8 +82,7 @@ export const importFromString = async (
 
       simpleWalk(acornNode, {
         ImportDeclaration(__node) {
-          const { specifiers: specifierNodes, source } =
-            __node as ImportDeclarationNode
+          const { specifiers: specifierNodes, source } = __node as ImportDeclarationNode
           if (source.value === specifier) {
             const namedExports = new Set<string>()
             let hasDefaultExport = false
@@ -140,10 +128,7 @@ export const importFromString = async (
   return requireFromString(transformResult.code, { dirPath, globals })
 }
 
-export const importFromStringSync = (
-  code: string,
-  options: ImportOptions = {}
-): any => {
+export const importFromStringSync = (code: string, options: ImportOptions = {}): any => {
   if (isInESModuleScope()) {
     throw new ESModuleNotSupportedError('importFromStringSync')
   }
