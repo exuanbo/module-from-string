@@ -26,18 +26,14 @@ export const requireFromString = (code: string, options: Options = {}): any => {
   contextModule.paths = mainModule?.paths ?? []
   contextModule.require = createRequire(fileName)
 
-  vm.runInNewContext(
-    code,
-    {
-      __dirname: contextModule.path,
-      __filename: contextModule.filename,
-      exports: contextModule.exports,
-      module: contextModule,
-      require: contextModule.require,
-      ...globals
-    },
-    { microtaskMode: 'afterEvaluate' }
-  )
+  vm.runInNewContext(code, {
+    __dirname: contextModule.path,
+    __filename: contextModule.filename,
+    exports: contextModule.exports,
+    module: contextModule,
+    require: contextModule.require,
+    ...globals
+  })
 
   contextModule.loaded = true
   return contextModule.exports
