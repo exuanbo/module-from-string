@@ -46,7 +46,7 @@
     "node": ">=12.16.0"
   },
   "dependencies": {
-    "@swc/core": "1.2.77",
+    "esbuild": "0.12.20",
     "nanoid": "3.1.25"
   },
   "devDependencies": {
