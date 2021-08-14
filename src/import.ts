@@ -1,7 +1,7 @@
 import { createRequire } from 'module'
 import path from 'path'
 import vm from 'vm'
-import { parse, transform, transformSync } from '@swc/core'
+import { Module as ModuleAST, parse, transform, transformSync } from '@swc/core'
 import { nanoid } from 'nanoid'
 import { requireFromString } from './require'
 import { ImportOptions, getDefaultTransformOptions, getCommonjsTransformOptions } from './options'
@@ -21,11 +21,21 @@ export const importFromString = async (
     throw new VmModuleNotEnabledError()
   }
 
-  // TODO: should be lazy
-  const swcModule = await parse(code, transformOptions?.jsc?.parser)
+  const getModuleAST = (() => {
+    let ast: ModuleAST
+    return async () => {
+      if (ast === undefined) {
+        ast = await parse(code, transformOptions?.jsc?.parser)
+      }
+      return ast
+    }
+  })()
 
   if (transformOptions !== undefined) {
-    ;({ code } = await transform(swcModule, getDefaultTransformOptions(transformOptions)))
+    ;({ code } = await transform(
+      await getModuleAST(),
+      getDefaultTransformOptions(transformOptions)
+    ))
   }
 
   const dirName = dirPath ?? path.dirname(process.argv[1])
@@ -57,7 +67,7 @@ export const importFromString = async (
     let importedModuleContent = ''
 
     if (importsMap.size === 0) {
-      swcModule.body.forEach(moduleItem => {
+      ;(await getModuleAST()).body.forEach(moduleItem => {
         if (moduleItem.type === 'ImportDeclaration') {
           const source = moduleItem.source.value
           if (!importsMap.has(source)) {
