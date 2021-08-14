@@ -55,7 +55,33 @@ export const importFromString = async (
     }
   })
 
-  const importsMap = new Map<string, Set<string>>()
+  const getImportsMap = (() => {
+    let importsMap: Map<string, Set<string>>
+    return async () => {
+      if (importsMap === undefined) {
+        importsMap = new Map()
+        ;(await getModuleAST()).body.forEach(node => {
+          if (node.type === 'ImportDeclaration') {
+            const source = node.source.value
+            if (!importsMap.has(source)) {
+              importsMap.set(source, new Set())
+            }
+            const importedNames = importsMap.get(source)!
+            node.specifiers.forEach(importSpecifier => {
+              if (importSpecifier.type === 'ImportSpecifier') {
+                if (importSpecifier.imported !== null) {
+                  importedNames.add(importSpecifier.imported.value)
+                }
+              } else {
+                importedNames.add('default')
+              }
+            })
+          }
+        })
+      }
+      return importsMap
+    }
+  })()
 
   // @ts-expect-error: experimental
   const linker = async (specifier: string): Promise<vm.Module> => {
@@ -66,28 +92,7 @@ export const importFromString = async (
 
     let importedModuleContent = ''
 
-    if (importsMap.size === 0) {
-      ;(await getModuleAST()).body.forEach(moduleItem => {
-        if (moduleItem.type === 'ImportDeclaration') {
-          const source = moduleItem.source.value
-          if (!importsMap.has(source)) {
-            importsMap.set(source, new Set())
-          }
-          const importedNames = importsMap.get(source)!
-          moduleItem.specifiers.forEach(importSpecifier => {
-            if (importSpecifier.type === 'ImportSpecifier') {
-              if (importSpecifier.imported !== null) {
-                importedNames.add(importSpecifier.imported.value)
-              }
-            } else {
-              importedNames.add('default')
-            }
-          })
-        }
-      })
-    }
-
-    const importedNames = importsMap.get(specifier)!
+    const importedNames = (await getImportsMap()).get(specifier)!
     if (importedNames.has('default')) {
       importedModuleContent = `export default __IMPORTS__['${specifier}'].default\n`
       importedNames.delete('default')
