@@ -2,6 +2,7 @@ import { Module, createRequire } from 'module'
 import path from 'path'
 import vm from 'vm'
 import { nanoid } from 'nanoid'
+import { isInESModuleScope, ESModuleNotSupportedError } from './utils'
 
 export interface Options {
   dirPath?: string
@@ -9,6 +10,10 @@ export interface Options {
 }
 
 export const requireFromString = (code: string, options: Options = {}): any => {
+  if (isInESModuleScope()) {
+    throw new ESModuleNotSupportedError('requireFromString')
+  }
+
   const { dirPath, globals = {} } = options
 
   const mainModule = require.main ?? undefined
