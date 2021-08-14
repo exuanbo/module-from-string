@@ -68,13 +68,11 @@ export const importFromString = async (
             }
             const importedNames = importsMap.get(source)!
             node.specifiers.forEach(importSpecifier => {
-              if (importSpecifier.type === 'ImportSpecifier') {
-                if (importSpecifier.imported !== null) {
-                  importedNames.add(importSpecifier.imported.value)
-                }
-              } else {
-                importedNames.add('default')
-              }
+              importedNames.add(
+                importSpecifier.type === 'ImportSpecifier'
+                  ? importSpecifier.imported?.value ?? importSpecifier.local.value
+                  : 'default'
+              )
             })
           }
         })
