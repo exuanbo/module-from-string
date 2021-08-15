@@ -5,20 +5,21 @@ import { nanoid } from 'nanoid'
 import { isInESModuleScope, getCallerDirName } from './utils'
 
 export interface Options {
-  dirPath?: string
+  dirname?: string
   globals?: Record<string, unknown>
 }
 
-export const requireFromString = (code: string, { dirPath, globals }: Options = {}): any => {
+export const requireFromString = (code: string, { dirname, globals }: Options = {}): any => {
   const mainModule = isInESModuleScope() ? undefined : require.main
-  const dirName = dirPath ?? mainModule?.path ?? getCallerDirName() ?? path.dirname(process.argv[1])
-  const fileName = path.join(dirName, `${nanoid()}.js`)
-  const contextModule = new Module(fileName, mainModule)
+  const moduleDirname =
+    dirname ?? mainModule?.path ?? getCallerDirName() ?? path.dirname(process.argv[1])
+  const moduleFilename = path.join(moduleDirname, `${nanoid()}.js`)
+  const contextModule = new Module(moduleFilename, mainModule)
 
-  contextModule.filename = fileName
-  contextModule.path = dirName
+  contextModule.filename = moduleFilename
+  contextModule.path = moduleDirname
   contextModule.paths = mainModule?.paths ?? []
-  contextModule.require = createRequire(fileName)
+  contextModule.require = createRequire(moduleFilename)
 
   vm.runInNewContext(code, {
     __dirname: contextModule.path,

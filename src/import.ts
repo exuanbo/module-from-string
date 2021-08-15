@@ -11,14 +11,14 @@ export interface ImportOptions extends Options {
 
 export const importFromString = async (
   code: string,
-  { dirPath, globals, transformOptions }: ImportOptions = {}
+  { dirname, globals, transformOptions }: ImportOptions = {}
 ): Promise<any> => {
   if (!isInESModuleScope()) {
     ;({ code } = await transform(code, {
       format: 'cjs',
       ...transformOptions
     }))
-    return requireFromString(code, { dirPath, globals })
+    return requireFromString(code, { dirname, globals })
   }
 
   // @ts-expect-error: experimental
@@ -33,8 +33,9 @@ export const importFromString = async (
     }))
   }
 
-  const dirName = dirPath ?? getCallerDirName() ?? path.dirname(process.argv[1])
-  const modulePath = path.join(dirName, `${nanoid()}.js`)
+  const moduleDirname = dirname ?? getCallerDirName() ?? path.dirname(process.argv[1])
+  const moduleFilename = path.join(moduleDirname, `${nanoid()}.js`)
+
   const context = vm.createContext({
     __IMPORTS__: {},
     ...globals
@@ -42,17 +43,16 @@ export const importFromString = async (
 
   // @ts-expect-error: experimental
   const vmModule = new vm.SourceTextModule(code, {
-    identifier: modulePath,
+    identifier: moduleFilename,
     context
   })
 
   // @ts-expect-error: experimental
   const linker = async (specifier: string): Promise<vm.Module> => {
-    const importedModulePath = new RegExp(`^[.\\${path.sep}]`).test(specifier)
-      ? path.resolve(dirName, specifier)
+    const importedModuleFilename = new RegExp(`^[.\\${path.sep}]`).test(specifier)
+      ? path.resolve(moduleDirname, specifier)
       : undefined
-    const importedModuleIdentifier = importedModulePath ?? specifier
-    const importedModule = await import(importedModuleIdentifier)
+    const importedModule = await import(importedModuleFilename ?? specifier)
     context.__IMPORTS__[specifier] = importedModule
 
     const exportedNames = new Set(Object.getOwnPropertyNames(importedModule))
@@ -62,7 +62,7 @@ export const importFromString = async (
 
     // @ts-expect-error: experimental
     return new vm.SourceTextModule(importedModuleContent, {
-      identifier: importedModuleIdentifier,
+      identifier: importedModuleFilename ?? specifier,
       context
     })
   }
@@ -74,7 +74,7 @@ export const importFromString = async (
 
 export const importFromStringSync = (
   code: string,
-  { dirPath, globals, transformOptions }: ImportOptions = {}
+  { dirname, globals, transformOptions }: ImportOptions = {}
 ): any => {
   if (isInESModuleScope()) {
     throw new Error(
@@ -87,5 +87,5 @@ Use asynchronous function \`importFromString\` instead and execute node with \`-
     format: 'cjs',
     ...transformOptions
   }))
-  return requireFromString(code, { dirPath, globals })
+  return requireFromString(code, { dirname, globals })
 }

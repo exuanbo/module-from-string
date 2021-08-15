@@ -21,7 +21,7 @@ it('should work with relative path import', () => {
 it('should resolve correctly if option `dirPath` is provided', () => {
   const modulePath = './cjs/fixtures/module.js'
   const res = requireFromString(`module.exports = require('${modulePath}')`, {
-    dirPath: path.join(__dirname, '..')
+    dirname: path.join(__dirname, '..')
   })
   expect(res).toBe('hi')
 })

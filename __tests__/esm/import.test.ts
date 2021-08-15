@@ -2,7 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { importFromString, importFromStringSync } from '../../src/index'
 
-const dirName = path.dirname(fileURLToPath(new URL(import.meta.url)))
+const dirname = path.dirname(fileURLToPath(new URL(import.meta.url)))
 
 describe('importFromString', () => {
   it('should work with named export', async () => {
@@ -24,13 +24,13 @@ describe('importFromString', () => {
   it('should resolve correctly if option `dirPath` is provided', async () => {
     const modulePath = './esm/fixtures/module.js'
     const res = await importFromString(`export { default as greet } from '${modulePath}'`, {
-      dirPath: path.join(dirName, '..')
+      dirname: path.join(dirname, '..')
     })
     expect(res.greet).toBe('hi')
   })
 
   it('should work with absolute path import', async () => {
-    const modulePath = path.join(dirName, 'fixtures/module.js')
+    const modulePath = path.join(dirname, 'fixtures/module.js')
     const res = await importFromString(`export { default as greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })

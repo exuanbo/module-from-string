@@ -2,7 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { requireFromString } from '../../src/index'
 
-const dirName = path.dirname(fileURLToPath(new URL(import.meta.url)))
+const dirname = path.dirname(fileURLToPath(new URL(import.meta.url)))
 
 it('should work with `module.exports`', () => {
   const res = requireFromString("module.exports = 'hi'")
@@ -24,13 +24,13 @@ it('should work with relative path import', () => {
 it('should resolve correctly if option `dirPath` is provided', () => {
   const modulePath = './cjs/fixtures/module.js'
   const res = requireFromString(`module.exports = require('${modulePath}')`, {
-    dirPath: path.join(dirName, '..')
+    dirname: path.join(dirname, '..')
   })
   expect(res).toBe('hi')
 })
 
 it('should work with absolute path import', () => {
-  const modulePath = path.join(dirName, '../cjs/fixtures/module.js')
+  const modulePath = path.join(dirname, '../cjs/fixtures/module.js')
   const res = requireFromString(`module.exports = require('${modulePath}')`)
   expect(res).toBe('hi')
 })
