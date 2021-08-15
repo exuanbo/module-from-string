@@ -3,7 +3,7 @@ import vm from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid'
 import { Options, requireFromString } from './require'
-import { isInESModuleScope } from './utils'
+import { isInESModuleScope, getCallerDirName } from './utils'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
@@ -33,7 +33,7 @@ export const importFromString = async (
     }))
   }
 
-  const dirName = dirPath ?? path.dirname(process.argv[1])
+  const dirName = dirPath ?? getCallerDirName() ?? path.dirname(process.argv[1])
   const modulePath = path.join(dirName, `${nanoid()}.js`)
   const context = vm.createContext({
     __IMPORTS__: {},
