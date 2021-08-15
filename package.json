@@ -14,13 +14,16 @@
     "test": "__tests__"
   },
   "scripts": {
-    "clean": "rimraf .cache dist",
+    "clean": "rm -rf .cache dist",
     "dts": "tsc -d --emitDeclarationOnly --declarationDir .cache",
     "bundle": "rollup -c",
     "build": "npm run clean && npm run dts && npm run bundle",
     "lint": "ts-standardx",
     "lint:fix": "ts-standardx --fix",
-    "test": "npm run lint && npm run build && jest --no-cache"
+    "jest:cjs": "jest -c __tests__/cjs/jest.config.js",
+    "jest:esm": "NODE_OPTIONS=--experimental-vm-modules jest -c __tests__/esm/jest.config.js",
+    "jest": "npm run jest:cjs && npm run jest:esm",
+    "test": "npm run lint && npm run build && npm run jest"
   },
   "repository": {
     "type": "git",

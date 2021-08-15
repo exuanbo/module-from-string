@@ -1,5 +1,5 @@
 import path from 'path'
-import { requireFromString } from '../src/index'
+import { requireFromString } from '../../src/index'
 
 it('should work with `module.exports`', () => {
   const res = requireFromString("module.exports = 'hi'")
@@ -15,6 +15,14 @@ it('should work with exports shortcut', () => {
 it('should work with relative path import', () => {
   const modulePath = './fixtures/module.js'
   const res = requireFromString(`module.exports = require('${modulePath}')`)
+  expect(res).toBe('hi')
+})
+
+it('should resolve correctly if option `dirPath` is provided', () => {
+  const modulePath = './cjs/fixtures/module.js'
+  const res = requireFromString(`module.exports = require('${modulePath}')`, {
+    dirPath: path.join(__dirname, '..')
+  })
   expect(res).toBe('hi')
 })
 
@@ -43,15 +51,4 @@ module.exports = code
 `
   const res = requireFromString(code)
   expect(res).toBe(transformedCode)
-})
-
-it('should have meaningful error message', () => {
-  expect.assertions(1)
-  try {
-    requireFromString("throw new Error('Boom!')")
-  } catch (err) {
-    expect(
-      err.stack.search(/module-from-string\/__tests__\/require\.test\.ts:51:5/)
-    ).toBeGreaterThan(0)
-  }
 })
