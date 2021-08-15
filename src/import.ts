@@ -3,7 +3,7 @@ import vm from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid'
 import { Options, requireFromString } from './require'
-import { isInESModuleScope, getESModuleError } from './utils'
+import { isInESModuleScope } from './utils'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
@@ -77,7 +77,10 @@ export const importFromStringSync = (
   { dirPath, globals, transformOptions }: ImportOptions = {}
 ): any => {
   if (isInESModuleScope()) {
-    throw getESModuleError('importFromStringSync')
+    throw new Error(
+      `function \`importFromStringSync\` can not work in ES module scope
+Use asynchronous function \`importFromString\` instead and execute node with \`--experimental-vm-modules\` command flag.`
+    )
   }
 
   ;({ code } = transformSync(code, {

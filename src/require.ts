@@ -2,7 +2,7 @@ import { Module, createRequire } from 'module'
 import path from 'path'
 import vm from 'vm'
 import { nanoid } from 'nanoid'
-import { isInESModuleScope, getESModuleError } from './utils'
+import { isInESModuleScope } from './utils'
 
 export interface Options {
   dirPath?: string
@@ -10,11 +10,7 @@ export interface Options {
 }
 
 export const requireFromString = (code: string, { dirPath, globals }: Options = {}): any => {
-  if (isInESModuleScope()) {
-    throw getESModuleError('requireFromString')
-  }
-
-  const mainModule = require.main
+  const mainModule = isInESModuleScope() ? undefined : require.main
   const dirName = dirPath ?? mainModule?.path ?? path.dirname(process.argv[1])
   const fileName = path.join(dirName, `${nanoid()}.js`)
   const contextModule = new Module(fileName, mainModule)
