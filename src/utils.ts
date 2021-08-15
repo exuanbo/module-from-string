@@ -9,7 +9,7 @@ export const isInESModuleScope = (): boolean => {
   }
 }
 
-export const getCallerDirName = (): string | null => {
+export const getCallerDirname = (): string | null => {
   const _prepareStackTrace = Error.prepareStackTrace
   Error.prepareStackTrace = (_err, stack) => stack
   const stack = (new Error().stack as unknown as NodeJS.CallSite[]).slice(2)
@@ -19,3 +19,5 @@ export const getCallerDirName = (): string | null => {
     ? path.dirname(fileName.startsWith('file://') ? fileURLToPath(new URL(fileName)) : fileName)
     : null
 }
+
+export const getEntryDirname = (): string => path.dirname(process.argv[1])
