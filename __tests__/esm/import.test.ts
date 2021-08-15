@@ -17,8 +17,14 @@ describe('importFromString', () => {
 
   it('should work with relative path import', async () => {
     const modulePath = './fixtures/module.js'
+    const res = await importFromString(`export { default as greet } from '${modulePath}'`)
+    expect(res.greet).toBe('hi')
+  })
+
+  it('should resolve correctly if option `dirPath` is provided', async () => {
+    const modulePath = './esm/fixtures/module.js'
     const res = await importFromString(`export { default as greet } from '${modulePath}'`, {
-      dirPath: dirName
+      dirPath: path.join(dirName, '..')
     })
     expect(res.greet).toBe('hi')
   })

@@ -18,6 +18,14 @@ describe('importFromString', () => {
     expect(res.greet).toBe('hi')
   })
 
+  it('should resolve correctly if option `dirPath` is provided', async () => {
+    const modulePath = './cjs/fixtures/module.js'
+    const res = await importFromString(`export { default as greet } from '${modulePath}'`, {
+      dirPath: path.join(__dirname, '..')
+    })
+    expect(res.greet).toBe('hi')
+  })
+
   it('should work with absolute path import', async () => {
     const modulePath = path.join(__dirname, 'fixtures/module.js')
     const res = await importFromString(`export { default as greet } from '${modulePath}'`)
@@ -59,6 +67,14 @@ describe('importFromStringSync', () => {
   it('should work with relative path import', () => {
     const modulePath = './fixtures/module.js'
     const res = importFromStringSync(`export { default as greet } from '${modulePath}'`)
+    expect(res.greet).toBe('hi')
+  })
+
+  it('should resolve correctly if option `dirPath` is provided', () => {
+    const modulePath = './cjs/fixtures/module.js'
+    const res = importFromStringSync(`export { default as greet } from '${modulePath}'`, {
+      dirPath: path.join(__dirname, '..')
+    })
     expect(res.greet).toBe('hi')
   })
 

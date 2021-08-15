@@ -1,1 +1,1 @@
-export { greet as default } from './submodule'
+export { greet as default } from './submodule.js'

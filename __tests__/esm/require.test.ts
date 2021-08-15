@@ -17,7 +17,15 @@ it('should work with exports shortcut', () => {
 
 it('should work with relative path import', () => {
   const modulePath = '../cjs/fixtures/module.js'
-  const res = requireFromString(`module.exports = require('${modulePath}')`, { dirPath: dirName })
+  const res = requireFromString(`module.exports = require('${modulePath}')`)
+  expect(res).toBe('hi')
+})
+
+it('should resolve correctly if option `dirPath` is provided', () => {
+  const modulePath = './cjs/fixtures/module.js'
+  const res = requireFromString(`module.exports = require('${modulePath}')`, {
+    dirPath: path.join(dirName, '..')
+  })
   expect(res).toBe('hi')
 })
 
