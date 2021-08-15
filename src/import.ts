@@ -43,10 +43,7 @@ export const importFromString = async (
   // @ts-expect-error: experimental
   const vmModule = new vm.SourceTextModule(code, {
     identifier: modulePath,
-    context,
-    initializeImportMeta(meta: ImportMeta) {
-      meta.url = modulePath
-    }
+    context
   })
 
   // @ts-expect-error: experimental
