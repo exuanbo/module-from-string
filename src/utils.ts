@@ -16,16 +16,26 @@ export const isVMModuleAvailable = (): boolean => vm.Module !== undefined
 const fileURLToPath = (value: string): string =>
   value.startsWith('file://') ? url.fileURLToPath(new URL(value)) : value
 
+const FUNCTION_NAMES = [
+  'getCallerDirname',
+  'requireFromString',
+  'importFromString',
+  'importFromStringSync',
+  'processTicksAndRejections'
+]
+
 export const getCallerDirname = (): string | null => {
   const _prepareStackTrace = Error.prepareStackTrace
   Error.prepareStackTrace = (_err, stackTraces) => stackTraces
-  const callSites = (new Error().stack as unknown as NodeJS.CallSite[]).slice(2)
+  const callSites = (new Error().stack as unknown as NodeJS.CallSite[]).filter(
+    callSite => !FUNCTION_NAMES.includes(String(callSite.getFunctionName()))
+  )
   Error.prepareStackTrace = _prepareStackTrace
-  const fileName = callSites[0].getFileName()
-  return fileName !== null ? path.dirname(fileURLToPath(fileName)) : null
+  const callerFilename = callSites[0].getFileName()
+  return callerFilename !== null ? path.dirname(fileURLToPath(callerFilename)) : null
 }
 
-export const resolveModuleSpecifier = (specifier: string, dirname: string): any => {
+export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
   const specifierPath = fileURLToPath(specifier)
   return new RegExp(`^[.\\${path.sep}]`).test(specifierPath)
     ? path.resolve(dirname, specifierPath)
