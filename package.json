@@ -46,7 +46,7 @@
   },
   "homepage": "https://github.com/exuanbo/module-from-string#readme",
   "engines": {
-    "node": ">=12.16.0"
+    "node": ">=12.20.0"
   },
   "dependencies": {
     "esbuild": "0.12.20",
