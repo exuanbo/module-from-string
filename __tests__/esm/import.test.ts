@@ -54,6 +54,11 @@ export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
     })
     expect(res.greet()).toBe('hi')
   })
+
+  it('should be able to access import.meta.url', async () => {
+    const res = await importFromString('export default import.meta.url')
+    expect(res.default).toMatch(dirname)
+  })
 })
 
 describe('importFromStringSync', () => {
