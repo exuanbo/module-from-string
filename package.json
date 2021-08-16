@@ -53,15 +53,11 @@
     "nanoid": "3.1.25"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "8.2.5",
     "@types/jest": "27.0.1",
     "@types/node": "16.6.1",
     "jest": "27.0.6",
-    "rollup": "2.56.2",
-    "rollup-plugin-dts": "3.0.2",
     "ts-jest": "27.0.4",
     "ts-standardx": "0.7.9",
-    "tslib": "2.3.1",
     "typescript": "4.3.5"
   }
 }
