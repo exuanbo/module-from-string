@@ -3,7 +3,13 @@ import vm from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid'
 import { Options, requireFromString } from './require'
-import { isInESModuleScope, isVMModuleAvailable, getCallerDirname, getEntryDirname } from './utils'
+import {
+  isInESModuleScope,
+  isVMModuleAvailable,
+  resolveModuleSpecifier,
+  getCallerDirname,
+  getEntryDirname
+} from './utils'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
@@ -47,14 +53,15 @@ export const importFromString = async (
     context,
     initializeImportMeta(meta: ImportMeta) {
       meta.url = moduleFilename
+    },
+    async importModuleDynamically(specifier: string) {
+      return await import(resolveModuleSpecifier(specifier, moduleDirname))
     }
   })
 
   // @ts-expect-error: experimental
   const linker = async (specifier: string): Promise<vm.Module> => {
-    const resolvedSpecifier = new RegExp(`^[.\\${path.sep}]`).test(specifier)
-      ? path.resolve(moduleDirname, specifier)
-      : specifier
+    const resolvedSpecifier = resolveModuleSpecifier(specifier, moduleDirname)
     const targetModule = await import(resolvedSpecifier)
     context.__IMPORTS__[specifier] = targetModule
 

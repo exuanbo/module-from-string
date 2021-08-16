@@ -1,5 +1,5 @@
 import path from 'path'
-import { fileURLToPath } from 'url'
+import url from 'url'
 import vm from 'vm'
 
 export const isInESModuleScope = (): boolean => {
@@ -10,10 +10,11 @@ export const isInESModuleScope = (): boolean => {
   }
 }
 
-export const isVMModuleAvailable = (): boolean => {
-  // @ts-expect-error: experimental
-  return vm.Module !== undefined
-}
+// @ts-expect-error: experimental
+export const isVMModuleAvailable = (): boolean => vm.Module !== undefined
+
+const fileURLToPath = (value: string): string =>
+  value.startsWith('file://') ? url.fileURLToPath(new URL(value)) : value
 
 export const getCallerDirname = (): string | null => {
   const _prepareStackTrace = Error.prepareStackTrace
@@ -21,9 +22,14 @@ export const getCallerDirname = (): string | null => {
   const callSites = (new Error().stack as unknown as NodeJS.CallSite[]).slice(2)
   Error.prepareStackTrace = _prepareStackTrace
   const fileName = callSites[0].getFileName()
-  return fileName !== null
-    ? path.dirname(fileName.startsWith('file://') ? fileURLToPath(new URL(fileName)) : fileName)
-    : null
+  return fileName !== null ? path.dirname(fileURLToPath(fileName)) : null
+}
+
+export const resolveModuleSpecifier = (specifier: string, dirname: string): any => {
+  const specifierPath = fileURLToPath(specifier)
+  return new RegExp(`^[.\\${path.sep}]`).test(specifierPath)
+    ? path.resolve(dirname, specifierPath)
+    : specifier
 }
 
 export const getEntryDirname = (): string => path.dirname(process.argv[1])
