@@ -3,7 +3,7 @@ import vm from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid'
 import { Options, requireFromString } from './require'
-import { isInESModuleScope, getCallerDirname, getEntryDirname } from './utils'
+import { isInESModuleScope, isVMModuleAvailable, getCallerDirname, getEntryDirname } from './utils'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
@@ -21,8 +21,7 @@ export const importFromString = async (
     return requireFromString(transformedCode, { dirname, globals })
   }
 
-  // @ts-expect-error: experimental
-  if (vm.Module === undefined) {
+  if (!isVMModuleAvailable()) {
     throw new Error('command flag `--experimental-vm-modules` is not enabled')
   }
 

@@ -1,5 +1,6 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
+import vm from 'vm'
 
 export const isInESModuleScope = (): boolean => {
   try {
@@ -7,6 +8,11 @@ export const isInESModuleScope = (): boolean => {
   } catch {
     return true
   }
+}
+
+export const isVMModuleAvailable = (): boolean => {
+  // @ts-expect-error: experimental
+  return vm.Module !== undefined
 }
 
 export const getCallerDirname = (): string | null => {
