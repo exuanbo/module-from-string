@@ -14,23 +14,16 @@ export const importFromString = async (
   { dirname, globals, transformOptions }: ImportOptions = {}
 ): Promise<any> => {
   if (!isInESModuleScope()) {
-    ;({ code } = await transform(code, {
+    const { code: transformedCode } = await transform(code, {
       format: 'cjs',
       ...transformOptions
-    }))
-    return requireFromString(code, { dirname, globals })
+    })
+    return requireFromString(transformedCode, { dirname, globals })
   }
 
   // @ts-expect-error: experimental
   if (vm.Module === undefined) {
     throw new Error('command flag `--experimental-vm-modules` is not enabled')
-  }
-
-  if (transformOptions !== undefined) {
-    ;({ code } = await transform(code, {
-      format: 'esm',
-      ...transformOptions
-    }))
   }
 
   const moduleDirname = dirname ?? getCallerDirname() ?? getEntryDirname()
@@ -41,8 +34,16 @@ export const importFromString = async (
     ...globals
   })
 
+  const { code: transformedCode = undefined } =
+    transformOptions !== undefined
+      ? await transform(code, {
+          format: 'esm',
+          ...transformOptions
+        })
+      : {}
+
   // @ts-expect-error: experimental
-  const vmModule = new vm.SourceTextModule(code, {
+  const vmModule = new vm.SourceTextModule(transformedCode ?? code, {
     identifier: moduleFilename,
     context
   })
@@ -83,9 +84,9 @@ Use asynchronous function \`importFromString\` instead and execute node with \`-
     )
   }
 
-  ;({ code } = transformSync(code, {
+  const { code: transformedCode } = transformSync(code, {
     format: 'cjs',
     ...transformOptions
-  }))
-  return requireFromString(code, { dirname, globals })
+  })
+  return requireFromString(transformedCode, { dirname, globals })
 }
