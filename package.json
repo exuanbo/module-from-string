@@ -14,9 +14,9 @@
     "test": "__tests__"
   },
   "scripts": {
-    "clean": "rm -rf .cache dist",
-    "dts": "tsc -d --emitDeclarationOnly --declarationDir .cache",
-    "bundle": "rollup -c",
+    "clean": "rm -rf dist",
+    "dts": "tsc -p tsconfig.build.json",
+    "bundle": "./build.js",
     "build": "npm run clean && npm run dts && npm run bundle",
     "lint": "ts-standardx",
     "lint:fix": "ts-standardx --fix",
