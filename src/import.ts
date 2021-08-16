@@ -49,20 +49,20 @@ export const importFromString = async (
 
   // @ts-expect-error: experimental
   const linker = async (specifier: string): Promise<vm.Module> => {
-    const importedModuleFilename = new RegExp(`^[.\\${path.sep}]`).test(specifier)
+    const resolvedSpecifier = new RegExp(`^[.\\${path.sep}]`).test(specifier)
       ? path.resolve(moduleDirname, specifier)
-      : undefined
-    const importedModule = await import(importedModuleFilename ?? specifier)
-    context.__IMPORTS__[specifier] = importedModule
+      : specifier
+    const targetModule = await import(resolvedSpecifier)
+    context.__IMPORTS__[specifier] = targetModule
 
-    const exportedNames = new Set(Object.getOwnPropertyNames(importedModule))
-    const importedModuleContent = `${
+    const exportedNames = new Set(Object.getOwnPropertyNames(targetModule))
+    const targetModuleContent = `${
       exportedNames.delete('default') ? `export default __IMPORTS__['${specifier}'].default\n` : ''
     }export const { ${[...exportedNames].join(', ')} } = __IMPORTS__['${specifier}']`
 
     // @ts-expect-error: experimental
-    return new vm.SourceTextModule(importedModuleContent, {
-      identifier: importedModuleFilename ?? specifier,
+    return new vm.SourceTextModule(targetModuleContent, {
+      identifier: resolvedSpecifier,
       context
     })
   }
