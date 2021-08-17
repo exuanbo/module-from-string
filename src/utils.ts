@@ -24,7 +24,7 @@ const FUNCTION_NAMES = [
   'processTicksAndRejections'
 ]
 
-export const getCallerDirname = (): string | null => {
+export const getCallerDirname = (): string => {
   const _prepareStackTrace = Error.prepareStackTrace
   Error.prepareStackTrace = (_err, stackTraces) => stackTraces
   const callSites = (new Error().stack as unknown as NodeJS.CallSite[]).filter(
@@ -32,7 +32,7 @@ export const getCallerDirname = (): string | null => {
   )
   Error.prepareStackTrace = _prepareStackTrace
   const callerFilename = callSites[0].getFileName()
-  return callerFilename !== null ? path.dirname(fileURLToPath(callerFilename)) : null
+  return path.dirname(callerFilename !== null ? fileURLToPath(callerFilename) : process.argv[1])
 }
 
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
@@ -41,5 +41,3 @@ export const resolveModuleSpecifier = (specifier: string, dirname: string): stri
     ? path.resolve(dirname, specifierPath)
     : specifier
 }
-
-export const getEntryDirname = (): string => path.dirname(process.argv[1])

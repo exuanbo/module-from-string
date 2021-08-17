@@ -6,9 +6,8 @@ import { Options, requireFromString } from './require'
 import {
   isInESModuleScope,
   isVMModuleAvailable,
-  resolveModuleSpecifier,
   getCallerDirname,
-  getEntryDirname
+  resolveModuleSpecifier
 } from './utils'
 
 export interface ImportOptions extends Options {
@@ -31,7 +30,7 @@ export const importFromString = async (
     throw new Error('command flag `--experimental-vm-modules` is not enabled')
   }
 
-  const moduleDirname = dirname ?? getCallerDirname() ?? getEntryDirname()
+  const moduleDirname = dirname ?? getCallerDirname()
   const moduleFilename = path.join(moduleDirname, `${nanoid()}.js`)
 
   const context = vm.createContext({
