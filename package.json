@@ -15,7 +15,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "dts": "tsc -p tsconfig.build.json",
+    "dts": "tsc -p tsconfig.dts.json",
     "build": "npm run clean && npm run dts && ./build.js",
     "lint": "ts-standardx",
     "lint:fix": "ts-standardx --fix",
