@@ -16,36 +16,29 @@ it('should work with exports shortcut', () => {
 })
 
 it('should work with relative path import', () => {
-  const modulePath = '../cjs/fixtures/module.js'
+  const modulePath = '../cjs/fixtures/defaultExport.js'
   const res = requireFromString(`module.exports = require('${modulePath}')`)
   expect(res).toBe('hi')
 })
 
 it('should resolve correctly if option `dirPath` is provided', () => {
-  const modulePath = './cjs/fixtures/module.js'
-  const res = requireFromString(`module.exports = require('${modulePath}')`, {
-    dirname: path.join(dirname, '..')
+  const modulePath = './cjs/fixtures/namedExport.js'
+  const res = requireFromString(`exports.greet = require('${modulePath}').greet`, {
+    dirname: path.dirname(dirname)
   })
-  expect(res).toBe('hi')
+  expect(res.greet).toBe('hi')
 })
 
 it('should work with absolute path import', () => {
-  const modulePath = path.join(dirname, '../cjs/fixtures/module.js')
+  const modulePath = path.join(dirname, '../cjs/fixtures/defaultExport.js')
   const res = requireFromString(`module.exports = require('${modulePath}')`)
   expect(res).toBe('hi')
-})
-
-it('should work with provided globals', () => {
-  const res = requireFromString('module.exports = process.cwd()', {
-    globals: { process }
-  })
-  expect(res).toBe(process.cwd())
 })
 
 it('should work with require external module', () => {
   const code = `const { transformSync } = require('esbuild')
 const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
-module.exports = code
+exports.greet = code
 `
   const transformedCode = `var Greet;
 (function(Greet2) {
@@ -53,5 +46,18 @@ module.exports = code
 })(Greet || (Greet = {}));
 `
   const res = requireFromString(code)
-  expect(res).toBe(transformedCode)
+  expect(res.greet).toBe(transformedCode)
+})
+
+it('should be able to use dynamic import', async () => {
+  const modulePath = './fixtures/defaultExport.js'
+  const res = await requireFromString(`module.exports = import('${modulePath}')`)
+  expect(res.default).toBe('hi')
+})
+
+it('should work with provided globals', () => {
+  const res = requireFromString('exports.cwd = process.cwd()', {
+    globals: { process }
+  })
+  expect(res.cwd).toBe(process.cwd())
 })

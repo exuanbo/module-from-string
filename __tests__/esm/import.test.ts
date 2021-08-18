@@ -16,28 +16,29 @@ describe('importFromString', () => {
   })
 
   it('should work with relative path import', async () => {
-    const modulePath = './fixtures/module.js'
-    const res = await importFromString(`export { default as greet } from '${modulePath}'`)
+    const modulePath = './fixtures/namedExport.js'
+    const res = await importFromString(`export { greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
   it('should resolve correctly if option `dirPath` is provided', async () => {
-    const modulePath = './esm/fixtures/module.js'
-    const res = await importFromString(`export { default as greet } from '${modulePath}'`, {
-      dirname: path.join(dirname, '..')
+    const modulePath = './esm/fixtures/defaultExport.js'
+    const res = await importFromString(`export { default } from '${modulePath}'`, {
+      dirname: path.dirname(dirname)
     })
-    expect(res.greet).toBe('hi')
+    expect(res.default).toBe('hi')
   })
 
   it('should work with absolute path import', async () => {
-    const modulePath = path.join(dirname, 'fixtures/module.js')
-    const res = await importFromString(`export { default as greet } from '${modulePath}'`)
+    const modulePath = path.join(dirname, 'fixtures/namedExport.js')
+    const res = await importFromString(`export { greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
   it('should work with import external module', async () => {
     const code = `import { transformSync } from 'esbuild'
-export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
+const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
+export default code
 `
     const transformedCode = `var Greet;
 (function(Greet2) {
@@ -45,19 +46,25 @@ export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
 })(Greet || (Greet = {}));
 `
     const res = await importFromString(code)
-    expect(res.code).toBe(transformedCode)
+    expect(res.default).toBe(transformedCode)
+  })
+
+  it('should be able to use dynamic import', async () => {
+    const modulePath = './fixtures/namedExport.js'
+    const res = await importFromString(`export const greetModule = import('${modulePath}')`)
+    expect((await res.greetModule).greet).toBe('hi')
   })
 
   it('should work if transformOption is provided', async () => {
-    const res = await importFromString("export const greet: () => string = () => 'hi'", {
+    const res = await importFromString("export default function(): string { return 'hi' }", {
       transformOptions: { loader: 'ts' }
     })
-    expect(res.greet()).toBe('hi')
+    expect(res.default()).toBe('hi')
   })
 
   it('should be able to access import.meta.url', async () => {
-    const res = await importFromString('export default import.meta.url')
-    expect(res.default).toMatch(dirname)
+    const res = await importFromString('export const { url } = import.meta')
+    expect(res.url).toMatch(dirname)
   })
 })
 

@@ -13,28 +13,29 @@ describe('importFromString', () => {
   })
 
   it('should work with relative path import', async () => {
-    const modulePath = './fixtures/module.js'
-    const res = await importFromString(`export { default as greet } from '${modulePath}'`)
+    const modulePath = './fixtures/namedExport.js'
+    const res = await importFromString(`export { greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
   it('should resolve correctly if option `dirPath` is provided', async () => {
-    const modulePath = './cjs/fixtures/module.js'
-    const res = await importFromString(`export { default as greet } from '${modulePath}'`, {
-      dirname: path.join(__dirname, '..')
+    const modulePath = './cjs/fixtures/defaultExport.js'
+    const res = await importFromString(`export { default } from '${modulePath}'`, {
+      dirname: path.dirname(__dirname)
     })
-    expect(res.greet).toBe('hi')
+    expect(res.default).toBe('hi')
   })
 
   it('should work with absolute path import', async () => {
-    const modulePath = path.join(__dirname, 'fixtures/module.js')
-    const res = await importFromString(`export { default as greet } from '${modulePath}'`)
+    const modulePath = path.join(__dirname, 'fixtures/namedExport.js')
+    const res = await importFromString(`export { greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
   it('should work with import external module', async () => {
     const code = `import { transformSync } from 'esbuild'
-export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
+const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
+export default code
 `
     const transformedCode = `var Greet;
 (function(Greet2) {
@@ -42,7 +43,7 @@ export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
 })(Greet || (Greet = {}));
 `
     const res = await importFromString(code)
-    expect(res.code).toBe(transformedCode)
+    expect(res.default).toBe(transformedCode)
   })
 
   it('should work if transformOption is provided', async () => {
@@ -65,28 +66,29 @@ describe('importFromStringSync', () => {
   })
 
   it('should work with relative path import', () => {
-    const modulePath = './fixtures/module.js'
-    const res = importFromStringSync(`export { default as greet } from '${modulePath}'`)
+    const modulePath = './fixtures/namedExport.js'
+    const res = importFromStringSync(`export { greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
   it('should resolve correctly if option `dirPath` is provided', () => {
-    const modulePath = './cjs/fixtures/module.js'
-    const res = importFromStringSync(`export { default as greet } from '${modulePath}'`, {
-      dirname: path.join(__dirname, '..')
+    const modulePath = './cjs/fixtures/defaultExport.js'
+    const res = importFromStringSync(`export { default } from '${modulePath}'`, {
+      dirname: path.dirname(__dirname)
     })
-    expect(res.greet).toBe('hi')
+    expect(res.default).toBe('hi')
   })
 
   it('should work with absolute path import', () => {
-    const modulePath = path.join(__dirname, 'fixtures/module.js')
-    const res = importFromStringSync(`export { default as greet } from '${modulePath}'`)
+    const modulePath = path.join(__dirname, 'fixtures/namedExport.js')
+    const res = importFromStringSync(`export { greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
 
   it('should work with import external module', () => {
     const code = `import { transformSync } from 'esbuild'
-export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
+const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
+export default code
 `
     const transformedCode = `var Greet;
 (function(Greet2) {
@@ -94,7 +96,7 @@ export const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
 })(Greet || (Greet = {}));
 `
     const res = importFromStringSync(code)
-    expect(res.code).toBe(transformedCode)
+    expect(res.default).toBe(transformedCode)
   })
 
   it('should work if transformOption is provided', async () => {
