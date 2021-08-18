@@ -1,6 +1,6 @@
 .github/
 build.js
 coverage/
-jest.config.js
+jest.config.*js
 src/
-tsconfig*.json
+tsconfig.*json
