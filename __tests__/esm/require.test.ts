@@ -49,13 +49,6 @@ exports.greet = code
   expect(res.greet).toBe(transformedCode)
 })
 
-it('should be able to use dynamic import', async () => {
-  expect.assertions(1)
-  const modulePath = './fixtures/defaultExport.js'
-  const res = requireFromString(`module.exports = import('${modulePath}')`)
-  expect((await res).default).toBe('hi')
-})
-
 it('should work with provided globals', () => {
   const res = requireFromString('exports.cwd = process.cwd()', {
     globals: { process }
