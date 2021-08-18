@@ -50,9 +50,10 @@ exports.greet = code
 })
 
 it('should be able to use dynamic import', async () => {
+  expect.assertions(1)
   const modulePath = './fixtures/defaultExport.js'
-  const res = await requireFromString(`module.exports = import('${modulePath}')`)
-  expect(res.default).toBe('hi')
+  const res = requireFromString(`module.exports = import('${modulePath}')`)
+  expect((await res).default).toBe('hi')
 })
 
 it('should work with provided globals', () => {
