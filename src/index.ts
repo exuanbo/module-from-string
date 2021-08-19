@@ -1,2 +1,2 @@
-export { requireFromString } from './require'
-export { importFromString, importFromStringSync } from './import'
+export * from './require'
+export * from './import'
