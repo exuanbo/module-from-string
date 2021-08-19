@@ -69,11 +69,12 @@ export default code
 })
 
 describe('importFromStringSync', () => {
-  it('should throw error', () => {
+  it('should throw error if import ES module', () => {
+    const modulePath = './fixtures/defaultExport.js'
     expect(() => {
-      importFromStringSync("export const greet = 'hi'")
+      importFromStringSync(`export { default } from '${modulePath}'`)
     }).toThrowError(
-      `function \`importFromStringSync\` can not work in ES module scope
+      `importing ES modules is not supported
 Use asynchronous function \`importFromString\` instead and execute node with \`--experimental-vm-modules\` command flag.`
     )
   })

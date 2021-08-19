@@ -3,12 +3,9 @@ import vm from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid'
 import { Options, requireFromString } from './require'
-import {
-  isInESModuleScope,
-  isVMModuleAvailable,
-  getCallerDirname,
-  resolveModuleSpecifier
-} from './utils'
+import { isVMModuleAvailable, getCallerDirname, resolveModuleSpecifier } from './utils'
+
+const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
@@ -18,16 +15,21 @@ export const importFromString = async (
   code: string,
   { dirname, globals, transformOptions }: ImportOptions = {}
 ): Promise<any> => {
-  if (!isInESModuleScope()) {
+  if (!isVMModuleAvailable()) {
     const { code: transformedCode } = await transform(code, {
       format: 'cjs',
       ...transformOptions
     })
-    return requireFromString(transformedCode, { dirname, globals })
-  }
-
-  if (!isVMModuleAvailable()) {
-    throw new Error('command flag `--experimental-vm-modules` is not enabled')
+    try {
+      return requireFromString(transformedCode, { dirname, globals })
+    } catch (err) {
+      if (err.code === ERR_REQUIRE_ESM) {
+        throw new Error(
+          'importing ES modules is supported only by enabling `--experimental-vm-modules` command flag'
+        )
+      }
+      throw err
+    }
   }
 
   const moduleDirname = dirname ?? getCallerDirname()
@@ -85,16 +87,19 @@ export const importFromStringSync = (
   code: string,
   { dirname, globals, transformOptions }: ImportOptions = {}
 ): any => {
-  if (isInESModuleScope()) {
-    throw new Error(
-      `function \`importFromStringSync\` can not work in ES module scope
-Use asynchronous function \`importFromString\` instead and execute node with \`--experimental-vm-modules\` command flag.`
-    )
-  }
-
   const { code: transformedCode } = transformSync(code, {
     format: 'cjs',
     ...transformOptions
   })
-  return requireFromString(transformedCode, { dirname, globals })
+  try {
+    return requireFromString(transformedCode, { dirname, globals })
+  } catch (err) {
+    if (err.code === ERR_REQUIRE_ESM) {
+      throw new Error(
+        `importing ES modules is not supported
+Use asynchronous function \`importFromString\` instead and execute node with \`--experimental-vm-modules\` command flag.`
+      )
+    }
+    throw err
+  }
 }
