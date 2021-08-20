@@ -56,7 +56,7 @@ export const importFromString = async (
   const moduleFilename = path.join(moduleDirname, `${nanoid()}.js`)
 
   const context = vm.createContext({
-    __IMPORTS__: {},
+    __imports__: {},
     ...globals
   })
 
@@ -84,12 +84,12 @@ export const importFromString = async (
   const linker = async (specifier: string): Promise<vm.Module> => {
     const resolvedSpecifier = resolveModuleSpecifier(specifier, moduleDirname)
     const targetModule = await import(resolvedSpecifier)
-    context.__IMPORTS__[specifier] = targetModule
+    context.__imports__[specifier] = targetModule
 
     const exportedNames = new Set(Object.getOwnPropertyNames(targetModule))
     const targetModuleContent = `${
-      exportedNames.delete('default') ? `export default __IMPORTS__['${specifier}'].default\n` : ''
-    }export const { ${[...exportedNames].join(', ')} } = __IMPORTS__['${specifier}']`
+      exportedNames.delete('default') ? `export default __imports__['${specifier}'].default;\n` : ''
+    }export const { ${[...exportedNames].join(', ')} } = __imports__['${specifier}'];`
 
     // @ts-expect-error: experimental
     return new vm.SourceTextModule(targetModuleContent, {
