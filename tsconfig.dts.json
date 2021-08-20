@@ -4,7 +4,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "noEmit": false,
-    "outDir": "./dist"
+    "outDir": "./.cache"
   },
   "exclude": ["__tests__/**/*"]
 }

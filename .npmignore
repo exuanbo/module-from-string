@@ -1,6 +1,8 @@
+.cache/
 .github/
 build.js
 coverage/
 jest.config.*js
+rollup.config.js
 src/
 tsconfig.*json
