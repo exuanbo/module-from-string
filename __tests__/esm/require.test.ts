@@ -1,6 +1,7 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { requireFromString } from '../../src/index'
+// @ts-expect-error: can not find type definition
+import { requireFromString } from '../../dist/index.mjs'
 
 const dirname = path.dirname(fileURLToPath(new URL(import.meta.url)))
 

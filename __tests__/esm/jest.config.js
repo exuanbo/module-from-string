@@ -1,8 +1,4 @@
-import baseConfig from '../jest.config.base.js'
-
 export default {
-  ...baseConfig,
-  coverageDirectory: '<rootDir>/coverage/esm',
   displayName: 'esm',
   globals: {
     'ts-jest': {
@@ -10,5 +6,6 @@ export default {
     }
   },
   preset: 'ts-jest/presets/default-esm',
+  rootDir: '../..',
   testMatch: ['<rootDir>/__tests__/esm/*.test.ts']
 }
