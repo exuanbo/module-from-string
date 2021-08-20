@@ -18,13 +18,13 @@ const getCJS = (transformOptions: TransformOptions | undefined): TransformOption
   return {
     ...transformOptions,
     banner:
-      `${(transformOptions?.banner ?? '').replace(/(.+?)[\n\r]+$/s, '$1')}\n` +
+      `${transformOptions?.banner !== undefined ? `${transformOptions.banner}\n` : ''}` +
       `${IMPORT_META_URL_SHIM}\n` +
       `${IMPORT_META_RESOLVE_SHIM}`,
     define: {
-      ...transformOptions?.define,
       'import.meta.url': 'import_meta_url',
-      'import.meta.resolve': 'import_meta_resolve'
+      'import.meta.resolve': 'import_meta_resolve',
+      ...transformOptions?.define
     },
     format: 'cjs'
   }
