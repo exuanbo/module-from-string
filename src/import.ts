@@ -7,6 +7,29 @@ import { isVMModuleAvailable, getCallerDirname, resolveModuleSpecifier } from '.
 
 const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
 
+const IMPORT_META_URL_SHIM =
+  "var import_meta_url = require('url').pathToFileURL(__filename).toString();"
+
+// TODO: refactor
+const IMPORT_META_RESOLVE_SHIM =
+  "var import_meta_resolve = (specifier, parent) => require.resolve(require('path').resolve(parent != null ? parent : __dirname, specifier));"
+
+const getCJS = (transformOptions: TransformOptions | undefined): TransformOptions => {
+  return {
+    ...transformOptions,
+    banner:
+      `${(transformOptions?.banner ?? '').replace(/(.+?)[\n\r]+$/s, '$1')}\n` +
+      `${IMPORT_META_URL_SHIM}\n` +
+      `${IMPORT_META_RESOLVE_SHIM}`,
+    define: {
+      ...transformOptions?.define,
+      'import.meta.url': 'import_meta_url',
+      'import.meta.resolve': 'import_meta_resolve'
+    },
+    format: 'cjs'
+  }
+}
+
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
 }
@@ -16,10 +39,7 @@ export const importFromString = async (
   { dirname, globals, transformOptions }: ImportOptions = {}
 ): Promise<any> => {
   if (!isVMModuleAvailable()) {
-    const { code: transformedCode } = await transform(code, {
-      format: 'cjs',
-      ...transformOptions
-    })
+    const { code: transformedCode } = await transform(code, getCJS(transformOptions))
     try {
       return requireFromString(transformedCode, { dirname, globals })
     } catch (err) {
@@ -87,10 +107,7 @@ export const importFromStringSync = (
   code: string,
   { dirname, globals, transformOptions }: ImportOptions = {}
 ): any => {
-  const { code: transformedCode } = transformSync(code, {
-    format: 'cjs',
-    ...transformOptions
-  })
+  const { code: transformedCode } = transformSync(code, getCJS(transformOptions))
   try {
     return requireFromString(transformedCode, { dirname, globals })
   } catch (err) {
