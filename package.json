@@ -20,7 +20,10 @@
     "build": "npm run clean && npm run dts && npm run bundle",
     "lint": "ts-standardx",
     "lint:fix": "ts-standardx --fix",
-    "test": "npm run lint && npm run build && NODE_OPTIONS=--experimental-vm-modules jest"
+    "jest:cjs": "jest -c __tests__/cjs/jest.config.js",
+    "jest:esm": "NODE_OPTIONS=--experimental-vm-modules jest -c __tests__/esm/jest.config.js",
+    "jest": "npm run jest:cjs && npm run jest:esm",
+    "test": "npm run lint && npm run build && npm run jest"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import path from 'path'
-import { importFromString, importFromStringSync } from '../..'
+import { importFromString, importFromStringSync } from '../../src/index'
 
 describe('importFromString', () => {
   it('should work with named export', async () => {

@@ -1,5 +1,5 @@
 import path from 'path'
-import { requireFromString } from '../..'
+import { requireFromString } from '../../src/index'
 
 it('should work with `module.exports`', () => {
   const res = requireFromString("module.exports = 'hi'")
