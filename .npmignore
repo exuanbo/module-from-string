@@ -1,6 +1,6 @@
+*.tgz
 .cache/
 .github/
-build.js
 coverage/
 jest.config.*js
 rollup.config.js
