@@ -24,4 +24,4 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm test
-      - run: bash <(curl -s https://codecov.io/bash)
+      # - run: bash <(curl -s https://codecov.io/bash)
