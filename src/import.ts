@@ -49,7 +49,8 @@ export const importFromString = async (
     } catch (err) {
       if (err.code === ERR_REQUIRE_ESM) {
         throw new Error(
-          'importing ES modules is supported only by enabling `--experimental-vm-modules` command flag'
+          `'import' statement of ES modules is not supported
+Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import()' expression.`
         )
       }
       throw err
@@ -117,8 +118,8 @@ export const importFromStringSync = (
   } catch (err) {
     if (err.code === ERR_REQUIRE_ESM) {
       throw new Error(
-        `importing ES modules is not supported
-Use asynchronous function \`importFromString\` instead and execute node with \`--experimental-vm-modules\` command flag.`
+        `'import' statement of ES modules is not supported
+Use asynchronous function 'importFromString' instead or replace it with dynamic 'import()' expression.`
       )
     }
     throw err

@@ -74,8 +74,8 @@ describe('importFromStringSync', () => {
     expect(() => {
       importFromStringSync(`export { default } from '${modulePath}'`)
     }).toThrowError(
-      `importing ES modules is not supported
-Use asynchronous function \`importFromString\` instead and execute node with \`--experimental-vm-modules\` command flag.`
+      `'import' statement of ES modules is not supported
+Use asynchronous function 'importFromString' instead or replace it with dynamic 'import()' expression.`
     )
   })
 })
