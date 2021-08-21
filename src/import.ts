@@ -10,9 +10,13 @@ const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
 const IMPORT_META_URL_SHIM =
   "var import_meta_url = require('url').pathToFileURL(__filename).toString();"
 
-// TODO: refactor
-const IMPORT_META_RESOLVE_SHIM =
-  "var import_meta_resolve = (specifier, parent) => require.resolve(require('path').resolve(parent != null ? parent : __dirname, specifier));"
+const IMPORT_META_RESOLVE_SHIM = `var import_meta_resolve = () => {
+  throw new Error(
+    \`'import.meta.resolve' is not supported
+Use asynchronous function 'importFromString' and enable '--experimental-vm-modules' CLI option.
+Or use 'transformOptions' to include a polyfill. See https://github.com/evanw/esbuild/issues/1492#issuecomment-893144483 as an example.\`
+  );
+};`
 
 const getCJS = (transformOptions: TransformOptions | undefined): TransformOptions => {
   return {
