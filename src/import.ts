@@ -61,7 +61,7 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
   const moduleFilename = path.join(moduleDirname, `${nanoid()}.js`)
 
   const context = vm.createContext({
-    __imports__: {},
+    __IMPORTS__: {},
     ...globals
   })
 
@@ -89,12 +89,12 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
   const linker = async (specifier: string): Promise<vm.Module> => {
     const resolvedSpecifier = resolveModuleSpecifier(specifier, moduleDirname)
     const targetModule = await import(resolvedSpecifier)
-    context.__imports__[specifier] = targetModule
+    context.__IMPORTS__[specifier] = targetModule
 
     const exportedNames = new Set(Object.getOwnPropertyNames(targetModule))
     const targetModuleContent = `${
-      exportedNames.delete('default') ? `export default __imports__['${specifier}'].default;\n` : ''
-    }export const { ${[...exportedNames].join(', ')} } = __imports__['${specifier}'];`
+      exportedNames.delete('default') ? `export default __IMPORTS__['${specifier}'].default;\n` : ''
+    }export const { ${[...exportedNames].join(', ')} } = __IMPORTS__['${specifier}'];`
 
     // @ts-expect-error: experimental
     return new vm.SourceTextModule(targetModuleContent, {
