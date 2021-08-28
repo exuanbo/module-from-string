@@ -47,7 +47,7 @@ export const importFromString = async (
     try {
       return requireFromString(transformedCode, { dirname, globals })
     } catch (err) {
-      if (err.code === ERR_REQUIRE_ESM) {
+      if ((err as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
         throw new Error(
           `'import' statement of ES modules is not supported
 Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import()' expression.`
@@ -116,7 +116,7 @@ export const importFromStringSync = (
   try {
     return requireFromString(transformedCode, { dirname, globals })
   } catch (err) {
-    if (err.code === ERR_REQUIRE_ESM) {
+    if ((err as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
       throw new Error(
         `'import' statement of ES modules is not supported
 Use asynchronous function 'importFromString' instead or replace it with dynamic 'import()' expression.`
