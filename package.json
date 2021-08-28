@@ -10,9 +10,6 @@
     "import": "./dist/index.mjs",
     "types": "./dist/index.d.ts"
   },
-  "directories": {
-    "test": "__tests__"
-  },
   "scripts": {
     "clean": "rm -rf .cache dist",
     "dts": "tsc -p tsconfig.dts.json",
@@ -49,18 +46,18 @@
     "node": ">=12.20.0"
   },
   "dependencies": {
-    "esbuild": "0.12.22",
+    "esbuild": "0.12.24",
     "nanoid": "3.1.25"
   },
   "devDependencies": {
     "@types/jest": "27.0.1",
-    "@types/node": "16.7.1",
-    "jest": "27.0.6",
+    "@types/node": "16.7.4",
+    "jest": "27.1.0",
     "rollup": "2.56.3",
     "rollup-plugin-dts": "3.0.2",
-    "rollup-plugin-esbuild-transform": "1.1.0",
+    "rollup-plugin-esbuild-transform": "1.1.1",
     "ts-jest": "27.0.5",
     "ts-standardx": "0.7.9",
-    "typescript": "4.3.5"
+    "typescript": "4.4.2"
   }
 }
