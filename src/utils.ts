@@ -27,9 +27,10 @@ const FUNCTION_NAMES = [
 export const getCallerDirname = (): string => {
   const _prepareStackTrace = Error.prepareStackTrace
   Error.prepareStackTrace = (_err, stackTraces) => stackTraces
-  const callSites = (new Error().stack as unknown as NodeJS.CallSite[]).filter(
-    callSite => !FUNCTION_NAMES.includes(String(callSite.getFunctionName()))
-  )
+  const callSites = (new Error().stack as unknown as NodeJS.CallSite[]).filter(callSite => {
+    const functionName = callSite.getFunctionName()
+    return functionName === null || !FUNCTION_NAMES.includes(functionName)
+  })
   Error.prepareStackTrace = _prepareStackTrace
   const callerFilename = callSites[0].getFileName()
   return path.dirname(callerFilename !== null ? fileURLToPath(callerFilename) : process.argv[1])
