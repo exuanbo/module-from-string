@@ -5,8 +5,6 @@ import { nanoid } from 'nanoid'
 import { Options, requireFromString } from './require'
 import { isVMModuleAvailable, getCallerDirname, resolveModuleSpecifier } from './utils'
 
-const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
-
 const IMPORT_META_URL_SHIM =
   "var import_meta_url = require('url').pathToFileURL(__filename).toString();"
 
@@ -18,7 +16,7 @@ Or use 'transformOptions' to include a polyfill. See https://github.com/evanw/es
   );
 };`
 
-const getCJS = (transformOptions: TransformOptions | undefined): TransformOptions => {
+const getCommonJS = (transformOptions: TransformOptions | undefined): TransformOptions => {
   return {
     ...transformOptions,
     banner:
@@ -34,6 +32,8 @@ const getCJS = (transformOptions: TransformOptions | undefined): TransformOption
   }
 }
 
+const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
+
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
 }
@@ -43,7 +43,7 @@ export const importFromString = async (
   { dirname, globals, transformOptions }: ImportOptions = {}
 ): Promise<any> => {
   if (!isVMModuleAvailable()) {
-    const { code: transformedCode } = await transform(code, getCJS(transformOptions))
+    const { code: transformedCode } = await transform(code, getCommonJS(transformOptions))
     try {
       return requireFromString(transformedCode, { dirname, globals })
     } catch (err) {
@@ -91,10 +91,14 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     const targetModule = await import(resolvedSpecifier)
     context.__IMPORTS__[specifier] = targetModule
 
-    const exportedNames = new Set(Object.getOwnPropertyNames(targetModule))
+    const exportedNames = Object.getOwnPropertyNames(targetModule)
     const targetModuleContent = `${
-      exportedNames.delete('default') ? `export default __IMPORTS__['${specifier}'].default;\n` : ''
-    }export const { ${[...exportedNames].join(', ')} } = __IMPORTS__['${specifier}'];`
+      exportedNames.includes('default')
+        ? `export default __IMPORTS__['${specifier}'].default;\n`
+        : ''
+    }export const { ${exportedNames
+      .filter(exportedName => exportedName !== 'default')
+      .join(', ')} } = __IMPORTS__['${specifier}'];`
 
     // @ts-expect-error: experimental
     return new vm.SourceTextModule(targetModuleContent, {
@@ -112,7 +116,7 @@ export const importFromStringSync = (
   code: string,
   { dirname, globals, transformOptions }: ImportOptions = {}
 ): any => {
-  const { code: transformedCode } = transformSync(code, getCJS(transformOptions))
+  const { code: transformedCode } = transformSync(code, getCommonJS(transformOptions))
   try {
     return requireFromString(transformedCode, { dirname, globals })
   } catch (err) {
