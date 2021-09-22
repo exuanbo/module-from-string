@@ -16,7 +16,7 @@ export const isInESModuleScope = (): boolean => {
 export const isVMModuleAvailable = (): boolean => vm.Module !== undefined
 
 const fileURLToPath = (value: string): string =>
-  value.startsWith('file://') ? url.fileURLToPath(new URL(value)) : value
+  value.startsWith('file://') ? url.fileURLToPath(value) : value
 
 const FUNCTION_NAMES = [
   'getCallerDirname',
