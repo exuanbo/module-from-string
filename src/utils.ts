@@ -2,8 +2,6 @@ import path from 'path'
 import url from 'url'
 import vm from 'vm'
 
-const VALID_PATH_REGEXP = /^[./\\]/
-
 export const isInESModuleScope = (): boolean => {
   try {
     return module === undefined
@@ -37,6 +35,8 @@ export const getCallerDirname = (): string => {
   const callerFilename = callSites[0].getFileName()
   return path.dirname(callerFilename !== null ? fileURLToPath(callerFilename) : process.argv[1])
 }
+
+const VALID_PATH_REGEXP = /^[./\\]/
 
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
   const specifierPath = fileURLToPath(specifier)
