@@ -36,9 +36,9 @@ export const getCallerDirname = (): string => {
   return path.dirname(callerFilename !== null ? fileURLToPath(callerFilename) : process.argv[1])
 }
 
-const VALID_PATH_REGEXP = /^[./\\]/
-
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
   const specifierPath = fileURLToPath(specifier)
-  return VALID_PATH_REGEXP.test(specifierPath) ? path.resolve(dirname, specifierPath) : specifier
+  return specifierPath.startsWith('.') || path.isAbsolute(specifierPath)
+    ? path.resolve(dirname, specifierPath)
+    : specifier
 }
