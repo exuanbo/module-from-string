@@ -17,10 +17,15 @@ export default [
       }
     ],
     plugins: [
-      esbuild({
-        loader: 'ts',
-        target: 'es2019'
-      }),
+      esbuild([
+        {
+          loader: 'ts'
+        },
+        {
+          output: true,
+          target: 'node12.20.0'
+        }
+      ]),
       {
         name: 'dynamic-import',
         renderDynamicImport() {
