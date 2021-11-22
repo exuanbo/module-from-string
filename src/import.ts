@@ -20,7 +20,7 @@ const getCommonJS = (transformOptions: TransformOptions | undefined): TransformO
   return {
     ...transformOptions,
     banner:
-      `${transformOptions?.banner !== undefined ? `${transformOptions.banner}\n` : ''}` +
+      `${transformOptions?.banner === undefined ? '' : `${transformOptions.banner}\n`}` +
       `${IMPORT_META_URL_SHIM}\n` +
       `${IMPORT_META_RESOLVE_SHIM}`,
     define: {
@@ -66,12 +66,12 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
   })
 
   const { code: transformedCode = undefined } =
-    transformOptions !== undefined
-      ? await transform(code, {
+    transformOptions === undefined
+      ? {}
+      : await transform(code, {
           format: 'esm',
           ...transformOptions
         })
-      : {}
 
   // @ts-expect-error: experimental
   const vmModule = new vm.SourceTextModule(transformedCode ?? code, {
