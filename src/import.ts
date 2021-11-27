@@ -40,7 +40,7 @@ export interface ImportOptions extends Options {
 
 export const importFromString = async (
   code: string,
-  { dirname, globals, transformOptions }: ImportOptions = {}
+  { dirname = getCallerDirname(), globals, transformOptions }: ImportOptions = {}
 ): Promise<any> => {
   if (!isVMModuleAvailable()) {
     const { code: transformedCode } = await transform(code, getCommonJS(transformOptions))
@@ -57,14 +57,6 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     }
   }
 
-  const moduleDirname = dirname ?? getCallerDirname()
-  const moduleFilename = path.join(moduleDirname, `${nanoid()}.js`)
-
-  const context = vm.createContext({
-    __IMPORTS__: {},
-    ...globals
-  })
-
   const { code: transformedCode = undefined } =
     transformOptions === undefined
       ? {}
@@ -72,6 +64,13 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
           format: 'esm',
           ...transformOptions
         })
+
+  const moduleFilename = path.join(dirname, `${nanoid()}.js`)
+
+  const context = vm.createContext({
+    __IMPORTS__: {},
+    ...globals
+  })
 
   // @ts-expect-error: experimental
   const vmModule = new vm.SourceTextModule(transformedCode ?? code, {
@@ -81,13 +80,13 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
       meta.url = moduleFilename
     },
     async importModuleDynamically(specifier: string) {
-      return await import(resolveModuleSpecifier(specifier, moduleDirname))
+      return await import(resolveModuleSpecifier(specifier, dirname))
     }
   })
 
   // @ts-expect-error: experimental
   const linker = async (specifier: string): Promise<vm.Module> => {
-    const resolvedSpecifier = resolveModuleSpecifier(specifier, moduleDirname)
+    const resolvedSpecifier = resolveModuleSpecifier(specifier, dirname)
     const targetModule = await import(resolvedSpecifier)
     context.__IMPORTS__[specifier] = targetModule
 
@@ -114,7 +113,7 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
 
 export const importFromStringSync = (
   code: string,
-  { dirname, globals, transformOptions }: ImportOptions = {}
+  { dirname = getCallerDirname(), globals, transformOptions }: ImportOptions = {}
 ): any => {
   const { code: transformedCode } = transformSync(code, getCommonJS(transformOptions))
   try {
