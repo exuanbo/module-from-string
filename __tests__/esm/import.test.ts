@@ -40,13 +40,14 @@ describe('importFromString', () => {
 const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
 export default code
 `
-    const transformedCode = `var Greet;
-(function(Greet2) {
-  Greet2[Greet2["Hi"] = 0] = "Hi";
-})(Greet || (Greet = {}));
-`
     const res = await importFromString(code)
-    expect(res.default).toBe(transformedCode)
+    expect(res.default).toMatchInlineSnapshot(`
+      "var Greet = /* @__PURE__ */ ((Greet2) => {
+        Greet2[Greet2[\\"Hi\\"] = 0] = \\"Hi\\";
+        return Greet2;
+      })(Greet || {});
+      "
+    `)
   })
 
   it('should be able to use dynamic import', async () => {

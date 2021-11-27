@@ -37,13 +37,14 @@ it('should work with require external module', () => {
 const { code } = transformSync('enum Greet { Hi }', { loader: 'ts' })
 exports.greet = code
 `
-  const transformedCode = `var Greet;
-(function(Greet2) {
-  Greet2[Greet2["Hi"] = 0] = "Hi";
-})(Greet || (Greet = {}));
-`
   const res = requireFromString(code)
-  expect(res.greet).toBe(transformedCode)
+  expect(res.greet).toMatchInlineSnapshot(`
+    "var Greet = /* @__PURE__ */ ((Greet2) => {
+      Greet2[Greet2[\\"Hi\\"] = 0] = \\"Hi\\";
+      return Greet2;
+    })(Greet || {});
+    "
+  `)
 })
 
 it('should work with provided globals', () => {
