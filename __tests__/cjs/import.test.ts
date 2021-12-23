@@ -18,9 +18,9 @@ describe('importFromString', () => {
     expect(res.greet).toBe('hi')
   })
 
-  it('should resolve correctly if option `dirPath` is provided', async () => {
+  it('should resolve correctly if option `dirname` is provided', async () => {
     const modulePath = './cjs/fixtures/defaultExport.js'
-    const res = await importFromString(`export { default } from '${modulePath}'`, {
+    const res = await importFromString(`import greet from '${modulePath}'; export default greet`, {
       dirname: path.dirname(__dirname)
     })
     expect(res.default).toBe('hi')
@@ -72,9 +72,9 @@ describe('importFromStringSync', () => {
     expect(res.greet).toBe('hi')
   })
 
-  it('should resolve correctly if option `dirPath` is provided', () => {
+  it('should resolve correctly if option `dirname` is provided', () => {
     const modulePath = './cjs/fixtures/defaultExport.js'
-    const res = importFromStringSync(`export { default } from '${modulePath}'`, {
+    const res = importFromStringSync(`import greet from '${modulePath}'; export default greet`, {
       dirname: path.dirname(__dirname)
     })
     expect(res.default).toBe('hi')
@@ -101,8 +101,8 @@ export default code
     `)
   })
 
-  it('should work if transformOption is provided', async () => {
-    const res = await importFromStringSync("export const greet: () => string = () => 'hi'", {
+  it('should work if transformOption is provided', () => {
+    const res = importFromStringSync("export const greet: () => string = () => 'hi'", {
       transformOptions: { loader: 'ts' }
     })
     expect(res.greet()).toBe('hi')

@@ -18,7 +18,7 @@ it('should work with relative path import', () => {
   expect(res).toBe('hi')
 })
 
-it('should resolve correctly if option `dirPath` is provided', () => {
+it('should resolve correctly if option `dirname` is provided', () => {
   const modulePath = './cjs/fixtures/namedExport.js'
   const res = requireFromString(`exports.greet = require('${modulePath}').greet`, {
     dirname: path.dirname(__dirname)
