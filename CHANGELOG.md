@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [3.1.4](https://github.com/exuanbo/module-from-string/compare/v3.1.3...v3.1.4) (2021-12-23)
 
 ### Bug Fixes
 
