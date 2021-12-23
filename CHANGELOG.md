@@ -6,6 +6,10 @@
 
 - `import.meta.url` is incorrectly set to path instead of URL string in `importFromString`.
 
+### Chores
+
+- Bump dependencies. Note that [esbuild 0.14.4](https://github.com/evanw/esbuild/releases/tag/v0.14.4) adjusted its handling of `default` exports and the `__esModule` marker to improve compatibility with Webpack and Node, which may cause some changes when transforming the code from ES modules to CommonJS modules.
+
 ## [3.1.3](https://github.com/exuanbo/module-from-string/compare/v3.1.2...v3.1.3) (2021-11-27)
 
 ### Bug Fixes
