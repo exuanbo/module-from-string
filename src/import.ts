@@ -3,7 +3,12 @@ import vm from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid'
 import { Options, requireFromString } from './require'
-import { isVMModuleAvailable, getCallerDirname, resolveModuleSpecifier } from './utils'
+import {
+  isVMModuleAvailable,
+  pathToFileURL,
+  getCallerDirname,
+  resolveModuleSpecifier
+} from './utils'
 
 const IMPORT_META_URL_SHIM =
   "var import_meta_url = require('url').pathToFileURL(__filename).toString();"
@@ -66,6 +71,7 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
         })
 
   const moduleFilename = path.join(dirname, `${nanoid()}.js`)
+  const moduleFileURL = pathToFileURL(moduleFilename)
 
   const context = vm.createContext({
     __IMPORTS__: {},
@@ -74,10 +80,10 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
 
   // @ts-expect-error: experimental
   const vmModule = new vm.SourceTextModule(transformedCode ?? code, {
-    identifier: moduleFilename,
+    identifier: moduleFileURL,
     context,
     initializeImportMeta(meta: ImportMeta) {
-      meta.url = moduleFilename
+      meta.url = moduleFileURL
     },
     async importModuleDynamically(specifier: string) {
       return await import(resolveModuleSpecifier(specifier, dirname))

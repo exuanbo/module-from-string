@@ -2,7 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { importFromString, importFromStringSync } from '../../src/index'
 
-const dirname = path.dirname(fileURLToPath(new URL(import.meta.url)))
+const __dirname = path.dirname(fileURLToPath(new URL(import.meta.url)))
 
 describe('importFromString', () => {
   it('should work with named export', async () => {
@@ -21,16 +21,16 @@ describe('importFromString', () => {
     expect(res.greet).toBe('hi')
   })
 
-  it('should resolve correctly if option `dirPath` is provided', async () => {
+  it('should resolve correctly if option `dirname` is provided', async () => {
     const modulePath = './esm/fixtures/defaultExport.js'
     const res = await importFromString(`export { default } from '${modulePath}'`, {
-      dirname: path.dirname(dirname)
+      dirname: path.dirname(__dirname)
     })
     expect(res.default).toBe('hi')
   })
 
   it('should work with absolute path import', async () => {
-    const modulePath = path.join(dirname, 'fixtures/namedExport.js')
+    const modulePath = path.join(__dirname, 'fixtures/namedExport.js')
     const res = await importFromString(`export { greet } from '${modulePath}'`)
     expect(res.greet).toBe('hi')
   })
@@ -65,7 +65,7 @@ export default code
 
   it('should be able to access import.meta.url', async () => {
     const res = await importFromString('export const { url } = import.meta')
-    expect(res.url).toMatch(dirname)
+    expect(res.url).toMatch(`file://${__dirname}`)
   })
 })
 

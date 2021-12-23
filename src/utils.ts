@@ -13,10 +13,16 @@ export const isInESModuleScope = (): boolean => {
 // @ts-expect-error: experimental
 export const isVMModuleAvailable = (): boolean => vm.Module !== undefined
 
-const fileURLToPath = (value: string): string =>
-  value.startsWith('file://') ? url.fileURLToPath(value) : value
+const FILE_URL_SCHEME = 'file:'
 
-const FUNCTION_NAMES = [
+const fileURLToPath = (value: string): string =>
+  value.startsWith(FILE_URL_SCHEME) ? url.fileURLToPath(value) : value
+
+// `path.join` will transform `file:///home` to `file:/home`¸
+export const pathToFileURL = (value: string): string =>
+  (value.startsWith(FILE_URL_SCHEME) ? new URL(value) : url.pathToFileURL(value)).href
+
+const FUNCTION_NAMES: readonly string[] = [
   'getCallerDirname',
   'requireFromString',
   'importFromString',
@@ -25,15 +31,15 @@ const FUNCTION_NAMES = [
 ]
 
 export const getCallerDirname = (): string => {
-  const _prepareStackTrace = Error.prepareStackTrace
+  const __prepareStackTrace = Error.prepareStackTrace
   Error.prepareStackTrace = (_err, stackTraces) => stackTraces
   const callSites = (new Error().stack as unknown as NodeJS.CallSite[]).filter(callSite => {
     const functionName = callSite.getFunctionName()
     return functionName === null || !FUNCTION_NAMES.includes(functionName)
   })
-  Error.prepareStackTrace = _prepareStackTrace
+  Error.prepareStackTrace = __prepareStackTrace
   const callerFilename = callSites[0].getFileName()
-  return path.dirname(callerFilename !== null ? fileURLToPath(callerFilename) : process.argv[1])
+  return path.dirname(callerFilename === null ? process.argv[1] : fileURLToPath(callerFilename))
 }
 
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {

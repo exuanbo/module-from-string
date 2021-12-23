@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Bug Fixes
+
+- `import.meta.url` is incorrectly set to path instead of URL string in `importFromString`.
+
 ## [3.1.3](https://github.com/exuanbo/module-from-string/compare/v3.1.2...v3.1.3) (2021-11-27)
 
 ### Bug Fixes
