@@ -1,7 +1,7 @@
 import path from 'path'
 import vm from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
-import { nanoid } from 'nanoid'
+import { nanoid } from 'nanoid/async'
 import { Options, requireFromString } from './require'
 import {
   isVMModuleAvailable,
@@ -70,7 +70,7 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
           ...transformOptions
         })
 
-  const moduleFilename = path.join(dirname, `${nanoid()}.js`)
+  const moduleFilename = path.join(dirname, `${await nanoid()}.js`)
   const moduleFileURL = pathToFileURL(moduleFilename)
 
   const context = vm.createContext({
