@@ -18,15 +18,15 @@ const FILE_URL_SCHEME = 'file:'
 const fileURLToPath = (value: string): string =>
   value.startsWith(FILE_URL_SCHEME) ? url.fileURLToPath(value) : value
 
-// `path.join` will transform `file:///home` to `file:/home`¸
+// `path.join` will transform `file:///home` to `file:/home`
 export const pathToFileURL = (value: string): string =>
   (value.startsWith(FILE_URL_SCHEME) ? new URL(value) : url.pathToFileURL(value)).href
 
 const FUNCTION_NAMES: readonly string[] = [
   'getCallerDirname',
   'requireFromString',
-  'importFromString',
   'importFromStringSync',
+  'importFromString',
   'processTicksAndRejections'
 ]
 
