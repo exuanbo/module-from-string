@@ -4,7 +4,7 @@ import pkg from './package.json'
 
 export default [
   {
-    external: ['module', 'path', 'url', 'vm', ...Object.keys(pkg.dependencies)],
+    external: ['module', 'path', 'url', 'vm', ...Object.keys(pkg.dependencies), 'nanoid/async'],
     input: 'src/index.ts',
     output: [
       {
