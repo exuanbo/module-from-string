@@ -1,5 +1,5 @@
-import path from 'path'
-import url from 'url'
+import { dirname, isAbsolute, resolve } from 'path'
+import { URL, fileURLToPath, pathToFileURL } from 'url'
 import vm from 'vm'
 
 export const isInESModuleScope = (): boolean => {
@@ -15,12 +15,12 @@ export const isVMModuleAvailable = (): boolean => vm.Module !== undefined
 
 const FILE_URL_SCHEME = 'file:'
 
-const fileURLToPath = (value: string): string =>
-  value.startsWith(FILE_URL_SCHEME) ? url.fileURLToPath(value) : value
+const fileURLStringToPath = (value: string): string =>
+  value.startsWith(FILE_URL_SCHEME) ? fileURLToPath(value) : value
 
 // `path.join` will transform `file:///home` to `file:/home`
-export const pathToFileURL = (value: string): string =>
-  (value.startsWith(FILE_URL_SCHEME) ? new URL(value) : url.pathToFileURL(value)).href
+export const pathToFileURLString = (value: string): string =>
+  (value.startsWith(FILE_URL_SCHEME) ? new URL(value) : pathToFileURL(value)).toString()
 
 const FUNCTION_NAMES: readonly string[] = [
   'getCallerDirname',
@@ -39,12 +39,12 @@ export const getCallerDirname = (): string => {
   })
   Error.prepareStackTrace = __prepareStackTrace
   const callerFilename = callSites[0].getFileName()
-  return path.dirname(callerFilename === null ? process.argv[1] : fileURLToPath(callerFilename))
+  return dirname(callerFilename === null ? process.argv[1] : fileURLStringToPath(callerFilename))
 }
 
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
-  const specifierPath = fileURLToPath(specifier)
-  return specifierPath.startsWith('.') || path.isAbsolute(specifierPath)
-    ? path.resolve(dirname, specifierPath)
+  const specifierPath = fileURLStringToPath(specifier)
+  return specifierPath.startsWith('.') || isAbsolute(specifierPath)
+    ? resolve(dirname, specifierPath)
     : specifier
 }

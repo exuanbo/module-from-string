@@ -1,11 +1,11 @@
-import path from 'path'
-import vm from 'vm'
+import { join } from 'path'
+import vm, { createContext } from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid/async'
 import { Options, requireFromString } from './require'
 import {
   isVMModuleAvailable,
-  pathToFileURL,
+  pathToFileURLString,
   getCallerDirname,
   resolveModuleSpecifier
 } from './utils'
@@ -70,20 +70,20 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
           ...transformOptions
         })
 
-  const moduleFilename = path.join(dirname, `${await nanoid()}.js`)
-  const moduleFileURL = pathToFileURL(moduleFilename)
+  const moduleFilename = join(dirname, `${await nanoid()}.js`)
+  const moduleFileURLString = pathToFileURLString(moduleFilename)
 
-  const context = vm.createContext({
+  const context = createContext({
     __IMPORTS__: {},
     ...globals
   })
 
   // @ts-expect-error: experimental
   const vmModule = new vm.SourceTextModule(transformedCode ?? code, {
-    identifier: moduleFileURL,
+    identifier: moduleFileURLString,
     context,
     initializeImportMeta(meta: ImportMeta) {
-      meta.url = moduleFileURL
+      meta.url = moduleFileURLString
     },
     async importModuleDynamically(specifier: string) {
       return await import(resolveModuleSpecifier(specifier, dirname))
