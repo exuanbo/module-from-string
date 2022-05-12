@@ -15,13 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ["12.20.0", "12", "14", "16", "17"]
+        node-version: ["12.20.0", "12", "14", "16", "18"]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
       - run: npm ci
       - run: npm test
-      # - run: bash <(curl -s https://codecov.io/bash)
