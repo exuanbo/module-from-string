@@ -15,12 +15,15 @@ export const isVMModuleAvailable = (): boolean => vm.Module !== undefined
 
 const FILE_URL_SCHEME = 'file:'
 
-const fileURLStringToPath = (value: string): string =>
-  value.startsWith(FILE_URL_SCHEME) ? fileURLToPath(value) : value
+const isFileURL = (value: string): boolean => value.startsWith(FILE_URL_SCHEME)
 
-// `path.join` will transform `file:///home` to `file:/home`
+const fileURLStringToPath = (value: string): string =>
+  isFileURL(value) ? fileURLToPath(value) : value
+
+// `path.join` for some reason will transform `file:///home` to `file:/home`
+// so we need to correct it using `URL` API
 export const pathToFileURLString = (value: string): string =>
-  (value.startsWith(FILE_URL_SCHEME) ? new URL(value) : pathToFileURL(value)).toString()
+  (isFileURL(value) ? new URL(value) : pathToFileURL(value)).toString()
 
 const FUNCTION_NAMES: readonly string[] = [
   'getCallerDirname',
