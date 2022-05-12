@@ -25,7 +25,7 @@ const fileURLStringToPath = (value: string): string =>
 export const pathToFileURLString = (value: string): string =>
   (isFileURL(value) ? new URL(value) : pathToFileURL(value)).toString()
 
-const FUNCTION_NAMES: readonly string[] = [
+const internalFunctionNames: readonly string[] = [
   'getCallerDirname',
   'requireFromString',
   'importFromStringSync',
@@ -36,9 +36,10 @@ const FUNCTION_NAMES: readonly string[] = [
 export const getCallerDirname = (): string => {
   const __prepareStackTrace = Error.prepareStackTrace
   Error.prepareStackTrace = (_err, stackTraces) => stackTraces
-  const callSites = (new Error().stack as unknown as NodeJS.CallSite[]).filter(callSite => {
+  // @ts-expect-error: safe to ignore
+  const callSites = (new Error().stack as NodeJS.CallSite[]).filter(callSite => {
     const functionName = callSite.getFunctionName()
-    return functionName === null || !FUNCTION_NAMES.includes(functionName)
+    return functionName === null || !internalFunctionNames.includes(functionName)
   })
   Error.prepareStackTrace = __prepareStackTrace
   const callerFilename = callSites[0].getFileName()
