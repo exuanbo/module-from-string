@@ -9,6 +9,7 @@
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
 
     "target": "es2019",
 
