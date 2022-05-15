@@ -6,6 +6,7 @@ export default {
   displayName: 'esm',
   globals: {
     'ts-jest': {
+      isolatedModules: true,
       useESM: true
     }
   },
