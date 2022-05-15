@@ -9,7 +9,8 @@ export default [
     output: [
       {
         file: pkg.main,
-        format: 'cjs'
+        format: 'cjs',
+        generatedCode: 'es2015'
       },
       {
         file: pkg.module,
