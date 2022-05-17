@@ -15,7 +15,7 @@ it('should work with exports shortcut', () => {
   expect(res.hi).toBe('hi')
 })
 
-it('should work with relative path import', () => {
+it('should work with relative path require', () => {
   const modulePath = '../cjs/fixtures/defaultExport.js'
   const res = requireFromString(`module.exports = require('${modulePath}')`)
   expect(res).toBe('hi')
@@ -29,7 +29,7 @@ it('should resolve correctly if option `dirname` is provided', () => {
   expect(res.greet).toBe('hi')
 })
 
-it('should work with absolute path import', () => {
+it('should work with absolute path require', () => {
   const modulePath = path.join(__dirname, '../cjs/fixtures/defaultExport.js')
   const res = requireFromString(`module.exports = require('${modulePath}')`)
   expect(res).toBe('hi')
