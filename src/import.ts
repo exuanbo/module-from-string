@@ -11,7 +11,7 @@ import {
 } from './utils'
 
 const IMPORT_META_URL_SHIM =
-  "var import_meta_url = require('url').pathToFileURL(__filename).toString();"
+  'var import_meta_url = require("url").pathToFileURL(__filename).toString();'
 
 const IMPORT_META_RESOLVE_SHIM = `function import_meta_resolve() {
   throw new Error(
