@@ -55,6 +55,20 @@ export default code
     })
     expect(res.greet()).toBe('hi')
   })
+
+  it('should be able to override default shims', async () => {
+    const relativeModulePath = './fixtures/namedExport.js'
+    const modulePath = path.join(__dirname, relativeModulePath)
+    const res = await importFromStringFn(
+      `export default import.meta.resolve("${relativeModulePath}")`,
+      {
+        transformOptions: {
+          banner: 'var import_meta_resolve = require.resolve;'
+        }
+      }
+    )
+    expect(res.default).toBe(modulePath)
+  })
 }
 
 describe('importFromString', () => {
