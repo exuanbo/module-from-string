@@ -10,6 +10,8 @@ import {
   resolveModuleSpecifier
 } from './utils'
 
+const USE_STRICT = '"use strict";'
+
 const IMPORT_META_URL_SHIM =
   'var import_meta_url = require("url").pathToFileURL(__filename).toString();'
 
@@ -25,9 +27,10 @@ const getCommonJS = (transformOptions: TransformOptions | undefined): TransformO
   return {
     ...transformOptions,
     banner:
-      `${transformOptions?.banner === undefined ? '' : `${transformOptions.banner}\n`}` +
+      `${USE_STRICT}\n` +
       `${IMPORT_META_URL_SHIM}\n` +
-      `${IMPORT_META_RESOLVE_SHIM}`,
+      `${IMPORT_META_RESOLVE_SHIM}\n` +
+      `${transformOptions?.banner ?? ''}`,
     define: {
       'import.meta.url': 'import_meta_url',
       'import.meta.resolve': 'import_meta_resolve',
