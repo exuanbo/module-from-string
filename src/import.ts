@@ -65,13 +65,14 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     }
   }
 
-  const { code: transformedCode = undefined } =
-    transformOptions === undefined
-      ? {}
-      : await transform(code, {
-          format: 'esm',
-          ...transformOptions
-        })
+  let transformedCode: string | undefined
+
+  if (transformOptions !== undefined) {
+    ;({ code: transformedCode } = await transform(code, {
+      format: 'esm',
+      ...transformOptions
+    }))
+  }
 
   const moduleFilename = join(dirname, `${await nanoid()}.js`)
   const moduleFileURLString = pathToFileURLString(moduleFilename)
