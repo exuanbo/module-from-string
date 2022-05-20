@@ -79,6 +79,8 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
 
   const context = createContext({
     __IMPORTS__: {},
+    __dirname: dirname,
+    __filename: moduleFilename,
     ...globals
   })
 

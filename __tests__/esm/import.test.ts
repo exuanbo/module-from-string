@@ -2,7 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { importFromString, importFromStringSync } from '../../src/index'
 
-const __dirname = path.dirname(fileURLToPath(new URL(import.meta.url)))
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('importFromString', () => {
   it('should work with named export', async () => {
@@ -61,6 +61,15 @@ export default code
       transformOptions: { loader: 'ts' }
     })
     expect(res.default()).toBe('hi')
+  })
+
+  it('should be able to access __dirname and __filename', () => {
+    const res = importFromStringSync(`
+      export const dirname = __dirname
+      export const filename = __filename
+    `)
+    expect(res.dirname).toBe(__dirname)
+    expect(res.filename).toMatch(__dirname)
   })
 
   it('should be able to access import.meta.url', async () => {

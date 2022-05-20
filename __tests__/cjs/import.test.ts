@@ -56,6 +56,15 @@ export default code
     expect(res.greet()).toBe('hi')
   })
 
+  it('should be able to access __dirname and __filename', () => {
+    const res = importFromStringSync(`
+      export const dirname = __dirname
+      export const filename = __filename
+    `)
+    expect(res.dirname).toBe(__dirname)
+    expect(res.filename).toMatch(__dirname)
+  })
+
   it('should be able to override default shims', async () => {
     const relativeModulePath = './fixtures/namedExport.js'
     const modulePath = path.join(__dirname, relativeModulePath)
