@@ -102,7 +102,7 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     const targetModule = await import(resolvedSpecifier)
     context.__IMPORTS__[specifier] = targetModule
 
-    const exportedNames = Object.getOwnPropertyNames(targetModule)
+    const exportedNames = Object.keys(targetModule)
     const targetModuleContent = `${
       exportedNames.includes('default')
         ? `export default __IMPORTS__['${specifier}'].default;\n`
