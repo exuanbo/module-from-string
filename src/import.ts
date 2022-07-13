@@ -1,5 +1,5 @@
 import { join } from 'path'
-import vm, { createContext } from 'vm'
+import vm, { Context, createContext } from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid/async'
 import { Options, requireFromString } from './require'
@@ -7,6 +7,7 @@ import {
   isVMModuleAvailable,
   pathToFileURLString,
   getCallerDirname,
+  createGlobalProxy,
   resolveModuleSpecifier
 } from './utils'
 
@@ -48,12 +49,12 @@ export interface ImportOptions extends Options {
 
 export const importFromString = async (
   code: string,
-  { dirname = getCallerDirname(), globals, transformOptions }: ImportOptions = {}
+  { transformOptions, ...commonOptions }: ImportOptions = {}
 ): Promise<any> => {
   if (!isVMModuleAvailable()) {
     const { code: transformedCode } = await transform(code, getCommonJS(transformOptions))
     try {
-      return requireFromString(transformedCode, { dirname, globals })
+      return requireFromString(transformedCode, commonOptions)
     } catch (err) {
       if (err != null && (err as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
         throw new Error(
@@ -74,15 +75,19 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     }))
   }
 
+  const { dirname = getCallerDirname(), globals, useCurrentGlobal = false } = commonOptions
+
   const moduleFilename = join(dirname, `${await nanoid()}.js`)
   const moduleFileURLString = pathToFileURLString(moduleFilename)
 
-  const context = createContext({
+  const contextObject: Context = {
     __IMPORTS__: {},
     __dirname: dirname,
     __filename: moduleFilename,
     ...globals
-  })
+  }
+  const context = createContext(useCurrentGlobal ? createGlobalProxy(contextObject) : contextObject)
+  context.global = context
 
   // @ts-expect-error: experimental
   const vmModule = new vm.SourceTextModule(transformedCode ?? code, {
@@ -125,11 +130,11 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
 
 export const importFromStringSync = (
   code: string,
-  { dirname = getCallerDirname(), globals, transformOptions }: ImportOptions = {}
+  { transformOptions, ...commonOptions }: ImportOptions = {}
 ): any => {
   const { code: transformedCode } = transformSync(code, getCommonJS(transformOptions))
   try {
-    return requireFromString(transformedCode, { dirname, globals })
+    return requireFromString(transformedCode, commonOptions)
   } catch (err) {
     if (err != null && (err as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
       throw new Error(

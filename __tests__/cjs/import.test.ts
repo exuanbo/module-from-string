@@ -49,13 +49,6 @@ export default code
     `)
   })
 
-  it('should work if transformOption is provided', async () => {
-    const res = await importFromStringFn("export const greet: () => string = () => 'hi'", {
-      transformOptions: { loader: 'ts' }
-    })
-    expect(res.greet()).toBe('hi')
-  })
-
   it('should be able to access __dirname and __filename', () => {
     const res = importFromStringSync(`
       export const dirname = __dirname
@@ -63,6 +56,27 @@ export default code
     `)
     expect(res.dirname).toBe(__dirname)
     expect(res.filename).toMatch(__dirname)
+  })
+
+  it('should have access the global object', async () => {
+    const res = await importFromStringFn('export const { greet } = global', {
+      globals: { greet: 'hi' }
+    })
+    expect(res.greet).toBe('hi')
+  })
+
+  it('should work with current global', async () => {
+    const res = await importFromStringFn('export default new Error()', {
+      useCurrentGlobal: true
+    })
+    expect(res.default).toBeInstanceOf(Error)
+  })
+
+  it('should work if transformOption is provided', async () => {
+    const res = await importFromStringFn("export const greet: () => string = () => 'hi'", {
+      transformOptions: { loader: 'ts' }
+    })
+    expect(res.greet()).toBe('hi')
   })
 
   it('should be able to override default shims', async () => {

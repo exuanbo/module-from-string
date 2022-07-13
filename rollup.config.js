@@ -2,9 +2,14 @@ import esbuild from 'rollup-plugin-esbuild-transform'
 import dts from 'rollup-plugin-dts'
 import pkg from './package.json'
 
+const builtins = ['module', 'path', 'url', 'vm']
+const dependencies = [...Object.keys(pkg.dependencies), 'nanoid/async']
+
+const external = [...builtins, ...dependencies]
+
 export default [
   {
-    external: ['module', 'path', 'url', 'vm', ...Object.keys(pkg.dependencies), 'nanoid/async'],
+    external,
     input: 'src/index.ts',
     output: [
       {
@@ -39,6 +44,7 @@ export default [
     ]
   },
   {
+    external,
     input: '.cache/index.d.ts',
     output: {
       file: pkg.types,

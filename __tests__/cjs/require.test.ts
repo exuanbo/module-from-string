@@ -53,3 +53,17 @@ it('should work with provided globals', () => {
   })
   expect(res).toBe(process.cwd())
 })
+
+it('should have access the global object', () => {
+  const res = requireFromString('module.exports = global.hi', {
+    globals: { hi: 'hi' }
+  })
+  expect(res).toBe('hi')
+})
+
+it('should work with current global', () => {
+  const res = requireFromString('module.exports = new Error()', {
+    useCurrentGlobal: true
+  })
+  expect(res).toBeInstanceOf(Error)
+})

@@ -1,6 +1,6 @@
 import { dirname, isAbsolute, resolve } from 'path'
 import { URL, fileURLToPath, pathToFileURL } from 'url'
-import vm from 'vm'
+import vm, { Context } from 'vm'
 
 export const isInESModuleScope = (): boolean => {
   try {
@@ -45,6 +45,17 @@ export const getCallerDirname = (): string => {
   const callerFilename = callSites[0].getFileName()
   return dirname(callerFilename === null ? process.argv[1] : fileURLStringToPath(callerFilename))
 }
+
+export const createGlobalProxy = (contextObject: Context): Context =>
+  new Proxy(contextObject, {
+    get: (target: Context, propKey: string) => {
+      if (propKey in target) {
+        return target[propKey]
+      } else {
+        return Reflect.get(global, propKey)
+      }
+    }
+  })
 
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
   const specifierPath = fileURLStringToPath(specifier)

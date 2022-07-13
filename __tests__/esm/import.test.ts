@@ -56,13 +56,6 @@ export default code
     expect((await res.greetModule).greet).toBe('hi')
   })
 
-  it('should work if transformOption is provided', async () => {
-    const res = await importFromString("export default function(): string { return 'hi' }", {
-      transformOptions: { loader: 'ts' }
-    })
-    expect(res.default()).toBe('hi')
-  })
-
   it('should be able to access __dirname and __filename', () => {
     const res = importFromStringSync(`
       export const dirname = __dirname
@@ -75,6 +68,27 @@ export default code
   it('should be able to access import.meta.url', async () => {
     const res = await importFromString('export const { url } = import.meta')
     expect(res.url).toMatch(`file://${__dirname}`)
+  })
+
+  it('should have access the global object', async () => {
+    const res = await importFromString('export const { greet } = global', {
+      globals: { greet: 'hi' }
+    })
+    expect(res.greet).toBe('hi')
+  })
+
+  it('should work with current global', async () => {
+    const res = await importFromString('export default new Error()', {
+      useCurrentGlobal: true
+    })
+    expect(res.default).toBeInstanceOf(Error)
+  })
+
+  it('should work if transformOption is provided', async () => {
+    const res = await importFromString("export default function(): string { return 'hi' }", {
+      transformOptions: { loader: 'ts' }
+    })
+    expect(res.default()).toBe('hi')
   })
 })
 
