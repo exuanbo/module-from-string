@@ -128,6 +128,11 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
   return vmModule.namespace
 }
 
+export const createImportFromString =
+  (options?: ImportOptions) =>
+  async (code: string): Promise<any> =>
+    await importFromString(code, options)
+
 export const importFromStringSync = (
   code: string,
   { transformOptions, ...commonOptions }: ImportOptions = {}
@@ -145,3 +150,8 @@ Use asynchronous function 'importFromString' instead or replace it with dynamic 
     throw err
   }
 }
+
+export const createImportFromStringSync =
+  (options?: ImportOptions) =>
+  (code: string): any =>
+    importFromStringSync(code, options)

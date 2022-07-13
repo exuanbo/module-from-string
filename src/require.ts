@@ -50,3 +50,8 @@ export const requireFromString = (
   contextModule.loaded = true
   return contextModule.exports
 }
+
+export const createRequireFromString =
+  (options?: Options) =>
+  (code: string): any =>
+    requireFromString(code, options)
