@@ -129,9 +129,12 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
 }
 
 export const createImportFromString =
-  (options?: ImportOptions) =>
-  async (code: string): Promise<any> =>
-    await importFromString(code, options)
+  (options?: ImportOptions): typeof importFromString =>
+  async (code, additionalOptions) =>
+    await importFromString(code, {
+      ...options,
+      ...additionalOptions
+    })
 
 export const importFromStringSync = (
   code: string,
@@ -152,6 +155,9 @@ Use asynchronous function 'importFromString' instead or replace it with dynamic 
 }
 
 export const createImportFromStringSync =
-  (options?: ImportOptions) =>
-  (code: string): any =>
-    importFromStringSync(code, options)
+  (options?: ImportOptions): typeof importFromStringSync =>
+  (code, additionalOptions) =>
+    importFromStringSync(code, {
+      ...options,
+      ...additionalOptions
+    })

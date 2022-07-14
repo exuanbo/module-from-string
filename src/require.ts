@@ -52,6 +52,9 @@ export const requireFromString = (
 }
 
 export const createRequireFromString =
-  (options?: Options) =>
-  (code: string): any =>
-    requireFromString(code, options)
+  (options?: Options): typeof requireFromString =>
+  (code, additionalOptions) =>
+    requireFromString(code, {
+      ...options,
+      ...additionalOptions
+    })
