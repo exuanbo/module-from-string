@@ -46,16 +46,42 @@ export const getCallerDirname = (): string => {
   return dirname(callerFilename === null ? process.argv[1] : fileURLStringToPath(callerFilename))
 }
 
-export const createGlobalProxy = (contextObject: Context): Context =>
-  new Proxy(contextObject, {
-    get: (target: Context, propKey: string) => {
-      if (propKey in target) {
-        return target[propKey]
-      } else {
-        return Reflect.get(global, propKey)
-      }
+const forEachPropertyKey = (
+  context: Context,
+  callbackfn: (propertyKey: string | symbol) => void
+): void => {
+  Object.getOwnPropertyNames(context).forEach(callbackfn)
+  Object.getOwnPropertySymbols(context).forEach(callbackfn)
+}
+
+export const shallowMergeContext = (target: Context, source: Context): Context => {
+  forEachPropertyKey(source, propertyKey => {
+    Object.defineProperty(target, propertyKey, {
+      ...Object.getOwnPropertyDescriptor(source, propertyKey)
+    })
+  })
+  return target
+}
+
+export const getCurrentGlobal = (): Context => shallowMergeContext({}, global)
+
+export const createGlobalObject = (currentGlobal: Context, globals: Context): Context => {
+  const globalObject = shallowMergeContext({}, currentGlobal)
+  delete globalObject.global
+  forEachPropertyKey(globals, propertyKey => {
+    if (propertyKey in currentGlobal) {
+      Object.defineProperty(globalObject, propertyKey, {
+        ...Object.getOwnPropertyDescriptor(currentGlobal, propertyKey),
+        value: globals[propertyKey as keyof Context]
+      })
+    } else {
+      Object.defineProperty(globalObject, propertyKey, {
+        ...Object.getOwnPropertyDescriptor(globals, propertyKey)
+      })
     }
   })
+  return globalObject
+}
 
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
   const specifierPath = fileURLStringToPath(specifier)

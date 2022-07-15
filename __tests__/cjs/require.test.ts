@@ -47,18 +47,28 @@ exports.greet = code
   `)
 })
 
+it('should not access other globals', () => {
+  const res = (): string => requireFromString('module.exports = process.cwd()')
+  expect(res).toThrowError()
+})
+
 it('should work with provided globals', () => {
-  const res = requireFromString('module.exports = process.cwd()', {
+  const res = requireFromString('exports.cwd = process.cwd()', {
     globals: { process }
   })
-  expect(res).toBe(process.cwd())
+  expect(res.cwd).toBe(process.cwd())
 })
 
 it('should have access the global object', () => {
-  const res = requireFromString('module.exports = global.hi', {
-    globals: { hi: 'hi' }
+  const res = requireFromString('module.exports = global.String(global.greet)', {
+    globals: { greet: 'hi' }
   })
   expect(res).toBe('hi')
+})
+
+it('should have same globalThis', () => {
+  const res = requireFromString('module.exports = global === globalThis')
+  expect(res).toBeTruthy()
 })
 
 it('should work with current global', () => {

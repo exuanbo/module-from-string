@@ -1,5 +1,5 @@
 import { join } from 'path'
-import vm, { Context, createContext } from 'vm'
+import vm, { createContext } from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid/async'
 import { Options, requireFromString } from './require'
@@ -7,7 +7,9 @@ import {
   isVMModuleAvailable,
   pathToFileURLString,
   getCallerDirname,
-  createGlobalProxy,
+  shallowMergeContext,
+  getCurrentGlobal,
+  createGlobalObject,
   resolveModuleSpecifier
 } from './utils'
 
@@ -42,6 +44,7 @@ const getCommonJS = (transformOptions: TransformOptions | undefined): TransformO
 }
 
 const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
+const IMPORTS = '__IMPORTS_FOR_INTERNAL_USE'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
@@ -75,19 +78,24 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     }))
   }
 
-  const { dirname = getCallerDirname(), globals, useCurrentGlobal = false } = commonOptions
+  const { dirname = getCallerDirname(), globals = {}, useCurrentGlobal = false } = commonOptions
 
   const moduleFilename = join(dirname, `${await nanoid()}.js`)
   const moduleFileURLString = pathToFileURLString(moduleFilename)
 
-  const contextObject: Context = {
-    __IMPORTS__: {},
-    __dirname: dirname,
-    __filename: moduleFilename,
-    ...globals
+  const globalObject = createGlobalObject(useCurrentGlobal ? getCurrentGlobal() : {}, globals)
+  const contextObject = shallowMergeContext(
+    {
+      __dirname: dirname,
+      __filename: moduleFilename
+    },
+    globalObject
+  )
+  if (!('global' in contextObject)) {
+    contextObject.global = contextObject
   }
-  const context = createContext(useCurrentGlobal ? createGlobalProxy(contextObject) : contextObject)
-  context.global = context
+  contextObject[IMPORTS] = {}
+  const context = createContext(contextObject)
 
   // @ts-expect-error: experimental
   const vmModule = new vm.SourceTextModule(transformedCode ?? code, {
@@ -105,16 +113,16 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
   const linker = async (specifier: string): Promise<vm.Module> => {
     const resolvedSpecifier = resolveModuleSpecifier(specifier, dirname)
     const targetModule = await import(resolvedSpecifier)
-    context.__IMPORTS__[specifier] = targetModule
+    context[IMPORTS][specifier] = targetModule
 
     const exportedNames = Object.keys(targetModule)
     const targetModuleContent = `${
       exportedNames.includes('default')
-        ? `export default __IMPORTS__['${specifier}'].default;\n`
+        ? `export default ${IMPORTS}['${specifier}'].default;\n`
         : ''
     }export const { ${exportedNames
       .filter(exportedName => exportedName !== 'default')
-      .join(', ')} } = __IMPORTS__['${specifier}'];`
+      .join(', ')} } = ${IMPORTS}['${specifier}'];`
 
     // @ts-expect-error: experimental
     return new vm.SourceTextModule(targetModuleContent, {

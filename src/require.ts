@@ -1,11 +1,13 @@
 import { Module, createRequire } from 'module'
 import { join } from 'path'
-import { Context, createContext, runInContext } from 'vm'
+import { Context, runInNewContext } from 'vm'
 import { nanoid } from 'nanoid'
 import {
   isInESModuleScope,
   getCallerDirname,
-  createGlobalProxy,
+  shallowMergeContext,
+  getCurrentGlobal,
+  createGlobalObject,
   resolveModuleSpecifier
 } from './utils'
 
@@ -17,7 +19,7 @@ export interface Options {
 
 export const requireFromString = (
   code: string,
-  { dirname = getCallerDirname(), globals, useCurrentGlobal = false }: Options = {}
+  { dirname = getCallerDirname(), globals = {}, useCurrentGlobal = false }: Options = {}
 ): any => {
   const moduleFilename = join(dirname, `${nanoid()}.js`)
   const mainModule = isInESModuleScope() ? undefined : require.main
@@ -28,18 +30,22 @@ export const requireFromString = (
   contextModule.paths = mainModule?.paths ?? []
   contextModule.require = createRequire(moduleFilename)
 
-  const contextObject: Context = {
-    __dirname: contextModule.path,
-    __filename: contextModule.filename,
-    exports: contextModule.exports,
-    module: contextModule,
-    require: contextModule.require,
-    ...globals
+  const globalObject = createGlobalObject(useCurrentGlobal ? getCurrentGlobal() : {}, globals)
+  const contextObject = shallowMergeContext(
+    {
+      __dirname: contextModule.path,
+      __filename: contextModule.filename,
+      exports: contextModule.exports,
+      module: contextModule,
+      require: contextModule.require
+    },
+    globalObject
+  )
+  if (!('global' in contextObject)) {
+    contextObject.global = contextObject
   }
-  const context = createContext(useCurrentGlobal ? createGlobalProxy(contextObject) : contextObject)
-  context.global = context
 
-  runInContext(code, context, {
+  runInNewContext(code, contextObject, {
     filename: moduleFilename,
     // @ts-expect-error: experimental
     async importModuleDynamically(specifier: string) {

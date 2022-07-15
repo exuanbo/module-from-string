@@ -70,11 +70,34 @@ export default code
     expect(res.url).toMatch(`file://${__dirname}`)
   })
 
+  it('should not access other globals', async () => {
+    expect.assertions(1)
+    // eslint-disable-next-line @typescript-eslint/promise-function-async
+    const res = (): Promise<string> => importFromString('export default process.cwd()')
+    try {
+      await res()
+    } catch (err) {
+      expect(Object.getPrototypeOf(err)).toHaveProperty('name', 'ReferenceError')
+    }
+  })
+
+  it('should work with provided globals', async () => {
+    const res = await importFromString('export const cwd = process.cwd()', {
+      globals: { process }
+    })
+    expect(res.cwd).toBe(process.cwd())
+  })
+
   it('should have access the global object', async () => {
     const res = await importFromString('export const { greet } = global', {
       globals: { greet: 'hi' }
     })
     expect(res.greet).toBe('hi')
+  })
+
+  it('should have same globalThis', async () => {
+    const res = await importFromString('export default global === globalThis')
+    expect(res.default).toBeTruthy()
   })
 
   it('should work with current global', async () => {
