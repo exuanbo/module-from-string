@@ -5,8 +5,8 @@ import { nanoid } from 'nanoid'
 import {
   isInESModuleScope,
   getCallerDirname,
-  shallowMergeContext,
   createGlobalObject,
+  createContextObject,
   resolveModuleSpecifier
 } from './utils'
 
@@ -30,7 +30,7 @@ export const requireFromString = (
   contextModule.require = createRequire(moduleFilename)
 
   const globalObject = createGlobalObject(globals, useCurrentGlobal)
-  const contextObject = shallowMergeContext(
+  const contextObject = createContextObject(
     {
       __dirname: contextModule.path,
       __filename: contextModule.filename,
@@ -40,9 +40,6 @@ export const requireFromString = (
     },
     globalObject
   )
-  if (!('global' in contextObject)) {
-    contextObject.global = contextObject
-  }
 
   runInNewContext(code, contextObject, {
     filename: moduleFilename,

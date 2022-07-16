@@ -7,8 +7,8 @@ import {
   isVMModuleAvailable,
   pathToFileURLString,
   getCallerDirname,
-  shallowMergeContext,
   createGlobalObject,
+  createContextObject,
   resolveModuleSpecifier
 } from './utils'
 
@@ -83,16 +83,13 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
   const moduleFileURLString = pathToFileURLString(moduleFilename)
 
   const globalObject = createGlobalObject(globals, useCurrentGlobal)
-  const contextObject = shallowMergeContext(
+  const contextObject = createContextObject(
     {
       __dirname: dirname,
       __filename: moduleFilename
     },
     globalObject
   )
-  if (!('global' in contextObject)) {
-    contextObject.global = contextObject
-  }
   contextObject[IMPORTS] = {}
   const context = createContext(contextObject)
 

@@ -54,7 +54,7 @@ const forEachPropertyKey = (
   Object.getOwnPropertySymbols(context).forEach(callbackfn)
 }
 
-export const shallowMergeContext = (target: Context, source: Context): Context => {
+const shallowMergeContext = (target: Context, source: Context): Context => {
   forEachPropertyKey(source, propertyKey => {
     Object.defineProperty(target, propertyKey, {
       ...Object.getOwnPropertyDescriptor(source, propertyKey)
@@ -91,6 +91,14 @@ export const createGlobalObject = (globals: Context, useCurrentGlobal: boolean):
     }
   })
   return globalObject
+}
+
+export const createContextObject = (moduleContext: Context, globalObject: Context): Context => {
+  const contextObject: Context = shallowMergeContext(moduleContext, globalObject)
+  if (!('global' in contextObject)) {
+    contextObject.global = contextObject
+  }
+  return contextObject
 }
 
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
