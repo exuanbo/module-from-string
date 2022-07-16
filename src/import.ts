@@ -8,7 +8,6 @@ import {
   pathToFileURLString,
   getCallerDirname,
   shallowMergeContext,
-  getCurrentGlobal,
   createGlobalObject,
   resolveModuleSpecifier
 } from './utils'
@@ -44,7 +43,7 @@ const getCommonJS = (transformOptions: TransformOptions | undefined): TransformO
 }
 
 const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
-const IMPORTS = '__IMPORTS_FOR_INTERNAL_USE'
+const IMPORTS = '__IMPORTS_FOR_INTERNAL_USE__'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions
@@ -83,7 +82,7 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
   const moduleFilename = join(dirname, `${await nanoid()}.js`)
   const moduleFileURLString = pathToFileURLString(moduleFilename)
 
-  const globalObject = createGlobalObject(useCurrentGlobal ? getCurrentGlobal() : {}, globals)
+  const globalObject = createGlobalObject(globals, useCurrentGlobal)
   const contextObject = shallowMergeContext(
     {
       __dirname: dirname,

@@ -63,15 +63,25 @@ export const shallowMergeContext = (target: Context, source: Context): Context =
   return target
 }
 
-export const getCurrentGlobal = (): Context => shallowMergeContext({}, global)
+const __GLOBAL__ = global
 
-export const createGlobalObject = (currentGlobal: Context, globals: Context): Context => {
-  const globalObject = shallowMergeContext({}, currentGlobal)
-  delete globalObject.global
+const getCurrentGlobal = (): Context => {
+  const currentGlobal = shallowMergeContext({}, __GLOBAL__)
+  delete currentGlobal.global
+  delete currentGlobal.globalThis
+  return currentGlobal
+}
+
+export const createGlobalObject = (globals: Context, useCurrentGlobal: boolean): Context => {
+  const globalObject = useCurrentGlobal
+    ? getCurrentGlobal()
+    : Object.defineProperty({}, Symbol.toStringTag, {
+        ...Object.getOwnPropertyDescriptor(__GLOBAL__, Symbol.toStringTag)
+      })
   forEachPropertyKey(globals, propertyKey => {
-    if (propertyKey in currentGlobal) {
+    if (propertyKey in __GLOBAL__) {
       Object.defineProperty(globalObject, propertyKey, {
-        ...Object.getOwnPropertyDescriptor(currentGlobal, propertyKey),
+        ...Object.getOwnPropertyDescriptor(__GLOBAL__, propertyKey),
         value: globals[propertyKey as keyof Context]
       })
     } else {

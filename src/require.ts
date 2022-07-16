@@ -6,7 +6,6 @@ import {
   isInESModuleScope,
   getCallerDirname,
   shallowMergeContext,
-  getCurrentGlobal,
   createGlobalObject,
   resolveModuleSpecifier
 } from './utils'
@@ -30,7 +29,7 @@ export const requireFromString = (
   contextModule.paths = mainModule?.paths ?? []
   contextModule.require = createRequire(moduleFilename)
 
-  const globalObject = createGlobalObject(useCurrentGlobal ? getCurrentGlobal() : {}, globals)
+  const globalObject = createGlobalObject(globals, useCurrentGlobal)
   const contextObject = shallowMergeContext(
     {
       __dirname: contextModule.path,
