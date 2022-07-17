@@ -38,31 +38,27 @@ importFromStringSync(
 ## API
 
 ```ts
-import { TransformOptions } from 'esbuild'
+import { Context } from 'vm';
+import { TransformOptions } from 'esbuild';
 
 interface Options {
   dirname?: string
-  globals?: Record<string, unknown>
+  globals?: Context
+  useCurrentGlobal?: boolean
 }
+
+declare const requireFromString: (code: string, options?: Options) => any
+declare const createRequireFromString: (options?: Options) => typeof requireFromString
 
 interface ImportOptions extends Options {
   transformOptions?: TransformOptions
 }
 
-declare const requireFromString: (
-  code: string,
-  { dirname, globals }?: Options
-) => any
+declare const importFromString: (code: string, options?: ImportOptions) => Promise<any>
+declare const createImportFromString: (options?: ImportOptions) => typeof importFromString
 
-declare const importFromString: (
-  code: string,
-  { dirname, globals, transformOptions }?: ImportOptions
-) => Promise<any>
-
-declare const importFromStringSync: (
-  code: string,
-  { dirname, globals, transformOptions }?: ImportOptions
-) => any
+declare const importFromStringSync: (code: string, options?: ImportOptions) => any
+declare const createImportFromStringSync: (options?: ImportOptions) => typeof importFromStringSync
 ```
 
 ### dirname
@@ -70,9 +66,10 @@ declare const importFromStringSync: (
 An absolute path of the directory for resolving `require` or `import` from relative path.
 
 ```js
-requireFromString("module.exports = require('.')", {
-  dirname: path.join(__dirname, "../lib")
-}) // => require('../lib')
+requireFromString(
+  "module.exports = require('.')",
+  { dirname: path.join(__dirname, "../lib") }
+) // => require('../lib')
 ```
 
 If not specified, the default value will be the current file's directory.
@@ -81,7 +78,7 @@ If not specified, the default value will be the current file's directory.
 
 Underneath the hood, `module-from-string` uses Node.js built-in `vm` module to execute code.
 
-```ts
+```js
 // requireFromString
 
 vm.runInNewContext(
@@ -96,7 +93,9 @@ vm.runInNewContext(
   },
 ```
 
-Take `requireFromString` for example, only the above variables are passed into the `contextObject`. In order to use other global objects and built-in modules you need to add them to option `globals`.
+Take `requireFromString` for example, only the above module scope variables are passed into the `contextObject`.
+
+In order to use other [global objects](https://nodejs.org/api/globals.html) that specific to Node.js, they need to be added to option `globals` **or** set option [`useCurrentGlobal`](#usecurrentglobal) to `true`.
 
 ```js
 requireFromString(
@@ -104,6 +103,17 @@ requireFromString(
   { globals: { process } }
 ) // => $PWD
 ```
+
+**Note**: by default the [built-in objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) have a different prototype.
+
+```js
+const err = requireFromString('module.exports = new Error()')
+err instanceof Error // => false
+```
+
+### useCurrentGlobal
+
+Default to `false`. If set to `true`, all the available variables from the current `global` (or `globalThis`) are passed into the context.
 
 ### transformOptions
 
