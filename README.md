@@ -93,9 +93,9 @@ vm.runInNewContext(
   },
 ```
 
-Take `requireFromString` for example, only the above module scope variables are passed into the `contextObject`.
+Take `requireFromString` for example, only the module scope variables are passed into the `contextObject`.
 
-In order to use other [global objects](https://nodejs.org/api/globals.html) that specific to Node.js, they need to be added to option `globals` **or** set option [`useCurrentGlobal`](#usecurrentglobal) to `true`.
+In order to use other [global objects](https://nodejs.org/api/globals.html) that are specific to Node.js, they need to be added to option `globals` **or** set option [`useCurrentGlobal`](#usecurrentglobal) to `true`.
 
 ```js
 requireFromString(
