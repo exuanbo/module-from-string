@@ -4,7 +4,7 @@
 
 ### Features
 
-- Add new optional option `useCurrentGlobal` to pass all the available variable from the current `global` (or `globalThis`) into the context.
+- Add option `useCurrentGlobal` to pass all the available variable from the current `global` (or `globalThis`) into the context.
 - Add curried functions `createRequireFromString`, `createImportFromString` and `createImportFromStringSync`.
 
 ## [3.1.4](https://github.com/exuanbo/module-from-string/compare/v3.1.3...v3.1.4) (2021-12-23)
