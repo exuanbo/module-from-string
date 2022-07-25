@@ -51,12 +51,12 @@ export interface ImportOptions extends Options {
 
 export const importFromString = async (
   code: string,
-  { transformOptions, ...commonOptions }: ImportOptions = {}
+  { transformOptions, ...options }: ImportOptions = {}
 ): Promise<any> => {
   if (!isVMModuleAvailable()) {
     const { code: transformedCode } = await transform(code, getCommonJS(transformOptions))
     try {
-      return requireFromString(transformedCode, commonOptions)
+      return requireFromString(transformedCode, options)
     } catch (err) {
       if (err != null && (err as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
         throw new Error(
@@ -77,7 +77,7 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     }))
   }
 
-  const { dirname = getCallerDirname(), globals = {}, useCurrentGlobal = false } = commonOptions
+  const { dirname = getCallerDirname(), globals = {}, useCurrentGlobal = false } = options
 
   const moduleFilename = join(dirname, `${await nanoid()}.js`)
   const moduleFileURLString = pathToFileURLString(moduleFilename)
@@ -142,11 +142,11 @@ export const createImportFromString =
 
 export const importFromStringSync = (
   code: string,
-  { transformOptions, ...commonOptions }: ImportOptions = {}
+  { transformOptions, ...options }: ImportOptions = {}
 ): any => {
   const { code: transformedCode } = transformSync(code, getCommonJS(transformOptions))
   try {
-    return requireFromString(transformedCode, commonOptions)
+    return requireFromString(transformedCode, options)
   } catch (err) {
     if (err != null && (err as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
       throw new Error(

@@ -24,19 +24,18 @@ export const requireFromString = (
   const mainModule = isInESModuleScope() ? undefined : require.main
   const contextModule = new Module(moduleFilename, mainModule)
 
-  contextModule.filename = moduleFilename
-  contextModule.path = dirname
-  contextModule.paths = mainModule?.paths ?? []
   contextModule.require = createRequire(moduleFilename)
+  contextModule.filename = moduleFilename
+  contextModule.paths = mainModule?.paths ?? []
 
   const globalObject = createGlobalObject(globals, useCurrentGlobal)
   const contextObject = createContextObject(
     {
-      __dirname: contextModule.path,
-      __filename: contextModule.filename,
       exports: contextModule.exports,
+      require: contextModule.require,
       module: contextModule,
-      require: contextModule.require
+      __filename: contextModule.filename,
+      __dirname: contextModule.path
     },
     globalObject
   )
