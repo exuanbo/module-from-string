@@ -1,5 +1,6 @@
 *.tgz
 .cache/
+.gitattributes
 .github/
 coverage/
 jest.config.*js
