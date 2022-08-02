@@ -1,5 +1,5 @@
 import path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 import { importFromString, importFromStringSync } from '../../src/index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -51,9 +51,19 @@ export default code
   })
 
   it('should be able to use dynamic import', async () => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const importModule = async (modulePath: string): Promise<any> => {
+      const result = await importFromString(`export const module = import('${modulePath}')`)
+      return result.module
+    }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+
     const modulePath = './fixtures/namedExport.js'
-    const res = await importFromString(`export const greetModule = import('${modulePath}')`)
-    expect((await res.greetModule).greet).toBe('hi')
+    expect((await importModule(modulePath)).greet).toBe('hi')
+
+    const absoluteModulePath = path.join(__dirname, modulePath)
+    expect((await importModule(absoluteModulePath)).greet).toBe('hi')
+    expect((await importModule(pathToFileURL(absoluteModulePath).toString())).greet).toBe('hi')
   })
 
   it('should be able to access __dirname and __filename', () => {
