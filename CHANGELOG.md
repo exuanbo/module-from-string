@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/exuanbo/module-from-string/compare/v3.2.0...v3.2.1) (2022-08-02)
+
+### Bug Fixes
+
+- File URL was incorrectly converted to path in `import()` expression.
+- Error when using import statement with absolute path on Windows.
+
 ## [3.2.0](https://github.com/exuanbo/module-from-string/compare/v3.1.4...v3.2.0) (2022-07-17)
 
 ### Features
