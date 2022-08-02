@@ -102,8 +102,10 @@ export const createContextObject = (moduleContext: Context, globalObject: Contex
 }
 
 export const resolveModuleSpecifier = (specifier: string, dirname: string): string => {
-  const specifierPath = fileURLStringToPath(specifier)
-  return specifierPath.startsWith('.') || isAbsolute(specifierPath)
-    ? resolve(dirname, specifierPath)
+  if (isFileURL(specifier)) {
+    return specifier
+  }
+  return specifier.startsWith('.') || isAbsolute(specifier)
+    ? resolve(dirname, specifier)
     : specifier
 }
