@@ -18,7 +18,7 @@
     "lint": "ts-standardx",
     "lint:fix": "ts-standardx --fix",
     "jest:cjs": "jest -c __tests__/cjs/jest.config.js",
-    "jest:esm": "NODE_OPTIONS=--experimental-vm-modules jest -c __tests__/esm/jest.config.js",
+    "jest:esm": "cross-env NODE_OPTIONS=--experimental-vm-modules jest -c __tests__/esm/jest.config.js",
     "jest": "npm run jest:cjs && npm run jest:esm",
     "test": "npm run lint && npm run build && npm run jest"
   },
@@ -52,6 +52,7 @@
   "devDependencies": {
     "@types/jest": "28.1.6",
     "@types/node": "18.0.5",
+    "cross-env": "7.0.3",
     "jest": "28.1.3",
     "rollup": "2.77.0",
     "rollup-plugin-dts": "4.2.2",
