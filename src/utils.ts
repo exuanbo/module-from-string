@@ -17,13 +17,12 @@ const FILE_URL_SCHEME = 'file:'
 
 const isFileURL = (value: string): boolean => value.startsWith(FILE_URL_SCHEME)
 
-const fileURLStringToPath = (value: string): string =>
-  isFileURL(value) ? fileURLToPath(value) : value
-
-// `path.join` for some reason will transform `file:///home` to `file:/home`
-// so we need to correct it using `URL` API
-export const pathToFileURLString = (value: string): string =>
-  (isFileURL(value) ? new URL(value) : pathToFileURL(value)).toString()
+// correct url using `URL` API,
+// because `path.join` transforms `file:///home` to `file:/home`
+export const pathToFileURLString = (value: string): string => {
+  const url = isFileURL(value) ? new URL(value) : pathToFileURL(value)
+  return url.toString()
+}
 
 const internalFunctionNames: readonly string[] = [
   'getCallerDirname',
@@ -42,8 +41,9 @@ export const getCallerDirname = (): string => {
     return functionName === null || !internalFunctionNames.includes(functionName)
   })
   Error.prepareStackTrace = __prepareStackTrace
-  const callerFilename = callSites[0].getFileName()
-  return dirname(callerFilename === null ? process.argv[1] : fileURLStringToPath(callerFilename))
+  const caller = callSites[0]
+  const callerFilename = caller.getFileName() ?? process.argv[1]
+  return dirname(isFileURL(callerFilename) ? fileURLToPath(callerFilename) : callerFilename)
 }
 
 const forEachPropertyKey = (
