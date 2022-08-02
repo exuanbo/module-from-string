@@ -28,7 +28,7 @@ it('should resolve correctly if option `dirname` is provided', () => {
 
 it('should work with absolute path require', () => {
   const modulePath = path.join(__dirname, 'fixtures/defaultExport.js')
-  const res = requireFromString(`module.exports = require('${modulePath}')`)
+  const res = requireFromString(`module.exports = require(${JSON.stringify(modulePath)})`)
   expect(res).toBe('hi')
 })
 

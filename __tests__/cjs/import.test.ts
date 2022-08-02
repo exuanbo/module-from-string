@@ -30,7 +30,7 @@ const testImport = (): void => {
 
   it('should work with absolute path import', async () => {
     const modulePath = path.join(__dirname, 'fixtures/namedExport.js')
-    const res = await importFromStringFn(`export { greet } from '${modulePath}'`)
+    const res = await importFromStringFn(`export { greet } from ${JSON.stringify(modulePath)}`)
     expect(res.greet).toBe('hi')
   })
 

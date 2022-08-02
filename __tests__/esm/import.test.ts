@@ -31,7 +31,7 @@ describe('importFromString', () => {
 
   it('should work with absolute path import', async () => {
     const modulePath = path.join(__dirname, 'fixtures/namedExport.js')
-    const res = await importFromString(`export { greet } from '${modulePath}'`)
+    const res = await importFromString(`export { greet } from ${JSON.stringify(modulePath)}`)
     expect(res.greet).toBe('hi')
   })
 
@@ -53,7 +53,9 @@ export default code
   it('should be able to use dynamic import', async () => {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const importModule = async (modulePath: string): Promise<any> => {
-      const result = await importFromString(`export const module = import('${modulePath}')`)
+      const result = await importFromString(
+        `export const module = import(${JSON.stringify(modulePath)})`
+      )
       return result.module
     }
     /* eslint-enable @typescript-eslint/no-explicit-any */
