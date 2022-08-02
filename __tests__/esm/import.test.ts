@@ -79,7 +79,7 @@ export default code
 
   it('should be able to access import.meta.url', async () => {
     const res = await importFromString('export const { url } = import.meta')
-    expect(res.url).toMatch(`file://${__dirname}`)
+    expect(res.url).toMatch(pathToFileURL(__dirname).toString())
   })
 
   it('should not access other globals', async () => {

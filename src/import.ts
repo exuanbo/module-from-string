@@ -114,11 +114,11 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     const exportedNames = Object.keys(targetModule)
     const targetModuleContent = `${
       exportedNames.includes('default')
-        ? `export default ${IMPORTS}['${specifier}'].default;\n`
+        ? `export default ${IMPORTS}[${JSON.stringify(specifier)}].default;\n`
         : ''
     }export const { ${exportedNames
       .filter(exportedName => exportedName !== 'default')
-      .join(', ')} } = ${IMPORTS}['${specifier}'];`
+      .join(', ')} } = ${IMPORTS}[${JSON.stringify(specifier)}];`
 
     // @ts-expect-error: experimental
     return new vm.SourceTextModule(targetModuleContent, {
