@@ -11,14 +11,14 @@ import {
 } from './utils'
 
 export interface Options {
-  dirname?: string
-  globals?: Context
-  useCurrentGlobal?: boolean
+  dirname?: string | undefined
+  globals?: Context | undefined
+  useCurrentGlobal?: boolean | undefined
 }
 
 export const requireFromString = (
   code: string,
-  { dirname = getCallerDirname(), globals = {}, useCurrentGlobal = false }: Options = {}
+  { dirname = getCallerDirname(), globals = {}, useCurrentGlobal = false }: Options | undefined = {}
 ): any => {
   const moduleFilename = join(dirname, `${nanoid()}.js`)
   const mainModule = isInESModuleScope() ? undefined : require.main
@@ -53,7 +53,7 @@ export const requireFromString = (
 }
 
 export const createRequireFromString =
-  (options?: Options): typeof requireFromString =>
+  (options?: Options | undefined): typeof requireFromString =>
   (code, additionalOptions) =>
     requireFromString(code, {
       ...options,

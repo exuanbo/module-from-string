@@ -46,12 +46,12 @@ const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
 const IMPORTS = '__IMPORTS_FOR_INTERNAL_USE__'
 
 export interface ImportOptions extends Options {
-  transformOptions?: TransformOptions
+  transformOptions?: TransformOptions | undefined
 }
 
 export const importFromString = async (
   code: string,
-  { transformOptions, ...options }: ImportOptions = {}
+  { transformOptions, ...options }: ImportOptions | undefined = {}
 ): Promise<any> => {
   if (!isVMModuleAvailable()) {
     const { code: transformedCode } = await transform(code, getCommonJS(transformOptions))
@@ -134,7 +134,7 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
 }
 
 export const createImportFromString =
-  (options?: ImportOptions): typeof importFromString =>
+  (options?: ImportOptions | undefined): typeof importFromString =>
   async (code, additionalOptions) =>
     await importFromString(code, {
       ...options,
@@ -143,7 +143,7 @@ export const createImportFromString =
 
 export const importFromStringSync = (
   code: string,
-  { transformOptions, ...options }: ImportOptions = {}
+  { transformOptions, ...options }: ImportOptions | undefined = {}
 ): any => {
   const { code: transformedCode } = transformSync(code, getCommonJS(transformOptions))
   try {
@@ -160,7 +160,7 @@ Use asynchronous function 'importFromString' instead or replace it with dynamic 
 }
 
 export const createImportFromStringSync =
-  (options?: ImportOptions): typeof importFromStringSync =>
+  (options?: ImportOptions | undefined): typeof importFromStringSync =>
   (code, additionalOptions) =>
     importFromStringSync(code, {
       ...options,
