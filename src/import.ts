@@ -57,14 +57,14 @@ export const importFromString = async (
     const { code: transformedCode } = await transform(code, getCommonJS(transformOptions))
     try {
       return requireFromString(transformedCode, options)
-    } catch (err) {
-      if (err != null && (err as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
+    } catch (error) {
+      if (error != null && (error as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
         throw new Error(
           `'import' statement of ES modules is not supported
 Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import()' expression.`
         )
       }
-      throw err
+      throw error
     }
   }
 
@@ -148,14 +148,14 @@ export const importFromStringSync = (
   const { code: transformedCode } = transformSync(code, getCommonJS(transformOptions))
   try {
     return requireFromString(transformedCode, options)
-  } catch (err) {
-    if (err != null && (err as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
+  } catch (error) {
+    if (error != null && (error as NodeJS.ErrnoException).code === ERR_REQUIRE_ESM) {
       throw new Error(
         `'import' statement of ES modules is not supported
 Use asynchronous function 'importFromString' instead or replace it with dynamic 'import()' expression.`
       )
     }
-    throw err
+    throw error
   }
 }
 
