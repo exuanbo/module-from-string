@@ -1,5 +1,5 @@
 import path from 'path'
-import { requireFromString } from '../../src/index'
+import { requireFromString, createRequireFromString } from '../../src/index'
 
 it('should work with `module.exports`', () => {
   const res = requireFromString("module.exports = 'hi'")
@@ -67,13 +67,22 @@ it('should have access the global object', () => {
 })
 
 it('should have same globalThis', () => {
-  const res = requireFromString('module.exports = global === globalThis')
-  expect(res).toBeTruthy()
+  const code = 'module.exports = global.globalThis === globalThis.global'
+  expect(requireFromString(code)).toBeTruthy()
+  expect(requireFromString(code, { useCurrentGlobal: true })).toBeTruthy()
 })
 
 it('should work with current global', () => {
-  const res = requireFromString('module.exports = new Error()', {
+  const requireFromStringFn = createRequireFromString({ useCurrentGlobal: true })
+  expect(requireFromStringFn('module.exports = new Error()')).toBeInstanceOf(Error)
+  expect(requireFromStringFn('module.exports = new global.Error()')).toBeInstanceOf(Error)
+})
+
+it('should be able to override current global', () => {
+  const requireFromStringFn = createRequireFromString({
+    globals: { Error: Array },
     useCurrentGlobal: true
   })
-  expect(res).toBeInstanceOf(Error)
+  expect(requireFromStringFn('module.exports = new Error()')).toBeInstanceOf(Array)
+  expect(requireFromStringFn('module.exports = new global.Error()')).toBeInstanceOf(Array)
 })

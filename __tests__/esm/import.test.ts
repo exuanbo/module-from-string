@@ -1,6 +1,6 @@
 import path from 'path'
 import { fileURLToPath, pathToFileURL } from 'url'
-import { importFromString, importFromStringSync } from '../../src/index'
+import { importFromString, createImportFromString, importFromStringSync } from '../../src/index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -88,8 +88,8 @@ export default code
     const res = (): Promise<string> => importFromString('export default process.cwd()')
     try {
       await res()
-    } catch (err) {
-      expect(Object.getPrototypeOf(err)).toHaveProperty('name', 'ReferenceError')
+    } catch (error) {
+      expect(Object.getPrototypeOf(error)).toHaveProperty('name', 'ReferenceError')
     }
   })
 
@@ -108,15 +108,24 @@ export default code
   })
 
   it('should have same globalThis', async () => {
-    const res = await importFromString('export default global === globalThis')
-    expect(res.default).toBeTruthy()
+    const code = 'export default global.globalThis === globalThis.global'
+    expect((await importFromString(code)).default).toBeTruthy()
+    expect((await importFromString(code, { useCurrentGlobal: true })).default).toBeTruthy()
   })
 
   it('should work with current global', async () => {
-    const res = await importFromString('export default new Error()', {
+    const importFromStringFn = createImportFromString({ useCurrentGlobal: true })
+    expect((await importFromStringFn('export default new Error()')).default).toBeInstanceOf(Error)
+    expect((await importFromStringFn('export default new global.Error()')).default).toBeInstanceOf(Error) // prettier-ignore
+  })
+
+  it('should be able to override current global', async () => {
+    const importFromStringFn = createImportFromString({
+      globals: { Error: Array },
       useCurrentGlobal: true
     })
-    expect(res.default).toBeInstanceOf(Error)
+    expect((await importFromStringFn('export default new Error()')).default).toBeInstanceOf(Array)
+    expect((await importFromStringFn('export default new global.Error()')).default).toBeInstanceOf(Array) // prettier-ignore
   })
 
   it('should work if transformOption is provided', async () => {
