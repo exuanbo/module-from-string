@@ -107,8 +107,8 @@ requireFromString(
 **Note**: by default the [built-in objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects) have a different prototype.
 
 ```js
-const err = requireFromString('module.exports = new Error()')
-err instanceof Error // => false
+const error = requireFromString('module.exports = new Error()')
+error instanceof Error // => false
 ```
 
 ### useCurrentGlobal
