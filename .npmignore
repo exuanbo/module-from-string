@@ -1,4 +1,5 @@
 *.tgz
+__tests__/*/fixtures/
 .cache/
 .gitattributes
 .github/
