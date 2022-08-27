@@ -43,7 +43,7 @@ const getCommonJS = (transformOptions: TransformOptions | undefined): TransformO
 }
 
 const ERR_REQUIRE_ESM = 'ERR_REQUIRE_ESM'
-const IMPORTS = '__IMPORTS_FOR_INTERNAL_USE__'
+const IMPORTS = '__INTERNAL_IMPORTS_FROM_STRING'
 
 export interface ImportOptions extends Options {
   transformOptions?: TransformOptions | undefined
