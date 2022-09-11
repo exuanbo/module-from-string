@@ -1,3 +1,4 @@
+import os from 'os'
 import path from 'path'
 import {
   importFromString,
@@ -129,6 +130,42 @@ export default code
       }
     )
     expect(res.default).toBe(modulePath)
+  })
+
+  it('should use relative filename in error stack trace', async () => {
+    expect.assertions(1)
+    const filename = 'foo.js'
+    const relativeDirname = path.relative(process.cwd(), __dirname)
+    const relativeFilename = path.join(relativeDirname, filename)
+    try {
+      await importFromStringFn('throw new Error("boom")', {
+        filename,
+        useCurrentGlobal: true
+      })
+    } catch (err) {
+      if (err instanceof Error) {
+        expect(err.stack).toMatch(new RegExp(`at \\S+${relativeFilename}:\\d+:\\d+$`, 'm'))
+      } else {
+        throw err
+      }
+    }
+  })
+
+  it('should use absolute filename in error stack trace', async () => {
+    expect.assertions(1)
+    const filename = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
+    try {
+      await importFromStringFn('throw new Error("boom")', {
+        filename,
+        useCurrentGlobal: true
+      })
+    } catch (err) {
+      if (err instanceof Error) {
+        expect(err.stack).toMatch(new RegExp(`at ${filename}:\\d+:\\d+$`, 'm'))
+      } else {
+        throw err
+      }
+    }
   })
 }
 

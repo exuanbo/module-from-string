@@ -1,4 +1,4 @@
-import { dirname, isAbsolute, resolve } from 'path'
+import { dirname, isAbsolute, resolve, sep } from 'path'
 import { URL, fileURLToPath, pathToFileURL } from 'url'
 import vm, { Context } from 'vm'
 
@@ -13,16 +13,15 @@ export const isInESModuleScope = (): boolean => {
 // @ts-expect-error: experimental
 export const isVMModuleAvailable = (): boolean => vm.Module !== undefined
 
-const FILE_URL_SCHEME = 'file:'
+const FILE_URL_PROTOCOL = 'file:'
 
-const isFileURL = (value: string): boolean => value.startsWith(FILE_URL_SCHEME)
+const isFileURL = (value: string): boolean => value.startsWith(FILE_URL_PROTOCOL)
 
-// correct url using `URL` API,
-// because `path.join` transforms `file:///home` to `file:/home`
-export const pathToFileURLString = (value: string): string => {
-  const url = isFileURL(value) ? new URL(value) : pathToFileURL(value)
-  return url.toString()
-}
+export const ensureFileURL = (value: string): string =>
+  isFileURL(value) ? value : pathToFileURL(value).toString()
+
+export const ensurePath = (value: string): string =>
+  isFileURL(value) ? fileURLToPath(value) : value
 
 const internalFunctionNames: readonly string[] = [
   'getCallerDirname',
@@ -43,7 +42,25 @@ export const getCallerDirname = (): string => {
   Error.prepareStackTrace = __prepareStackTrace
   const caller = callSites[0]
   const callerFilename = caller.getFileName() ?? process.argv[1]
-  return dirname(isFileURL(callerFilename) ? fileURLToPath(callerFilename) : callerFilename)
+  return dirname(ensurePath(callerFilename))
+}
+
+const normalizeDirname = (dirname: string): string => {
+  const separater = isFileURL(dirname) ? '/' : sep
+  return dirname.endsWith(separater) ? dirname : `${dirname}${separater}`
+}
+
+export const getModuleFilename = (dirname: string, filename: string): string => {
+  if (isInESModuleScope()) {
+    if (isFileURL(filename)) {
+      return filename
+    } else {
+      const normalizedDirname = normalizeDirname(dirname)
+      return new URL(filename, ensureFileURL(normalizedDirname)).toString()
+    }
+  } else {
+    return resolve(ensurePath(dirname), ensurePath(filename))
+  }
 }
 
 const forEachPropertyKey = (
@@ -106,6 +123,6 @@ export const resolveModuleSpecifier = (specifier: string, dirname: string): stri
     return specifier
   }
   return specifier.startsWith('.') || isAbsolute(specifier)
-    ? resolve(dirname, specifier)
+    ? resolve(ensurePath(dirname), specifier)
     : specifier
 }

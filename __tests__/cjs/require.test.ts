@@ -1,3 +1,4 @@
+import os from 'os'
 import path from 'path'
 import { requireFromString, createRequireFromString } from '../../src/index'
 
@@ -85,4 +86,40 @@ it('should be able to override current global', () => {
   })
   expect(requireFromStringFn('module.exports = new Error()')).toBeInstanceOf(Array)
   expect(requireFromStringFn('module.exports = new global.Error()')).toBeInstanceOf(Array)
+})
+
+it('should use relative filename in error stack trace', () => {
+  expect.assertions(1)
+  const filename = 'foo.js'
+  const relativeDirname = path.relative(process.cwd(), __dirname)
+  const relativeFilename = path.join(relativeDirname, filename)
+  try {
+    requireFromString('throw new Error("boom")', {
+      filename,
+      useCurrentGlobal: true
+    })
+  } catch (err) {
+    if (err instanceof Error) {
+      expect(err.stack).toMatch(new RegExp(`at \\S+${relativeFilename}:\\d+:\\d+$`, 'm'))
+    } else {
+      throw err
+    }
+  }
+})
+
+it('should use absolute filename in error stack trace', () => {
+  expect.assertions(1)
+  const filename = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
+  try {
+    requireFromString('throw new Error("boom")', {
+      filename,
+      useCurrentGlobal: true
+    })
+  } catch (err) {
+    if (err instanceof Error) {
+      expect(err.stack).toMatch(new RegExp(`at ${filename}:\\d+:\\d+$`, 'm'))
+    } else {
+      throw err
+    }
+  }
 })

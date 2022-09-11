@@ -1,12 +1,13 @@
-import { join } from 'path'
 import vm, { createContext } from 'vm'
 import { TransformOptions, transform, transformSync } from 'esbuild'
 import { nanoid } from 'nanoid/async'
 import { Options, requireFromString } from './require'
 import {
   isVMModuleAvailable,
-  pathToFileURLString,
+  ensureFileURL,
+  ensurePath,
   getCallerDirname,
+  getModuleFilename,
   createGlobalObject,
   createContextObject,
   resolveModuleSpecifier
@@ -77,16 +78,21 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
     }))
   }
 
-  const { dirname = getCallerDirname(), globals = {}, useCurrentGlobal = false } = options
+  const {
+    filename = `${await nanoid()}.js`,
+    dirname = getCallerDirname(),
+    globals = {},
+    useCurrentGlobal = false
+  } = options
 
-  const moduleFilename = join(dirname, `${await nanoid()}.js`)
-  const moduleFileURLString = pathToFileURLString(moduleFilename)
+  const moduleFilename = getModuleFilename(dirname, filename)
+  const moduleFileURLString = ensureFileURL(moduleFilename)
 
   const globalObject = createGlobalObject(globals, useCurrentGlobal)
   const contextObject = createContextObject(
     {
-      __dirname: dirname,
-      __filename: moduleFilename
+      __dirname: ensurePath(dirname),
+      __filename: ensurePath(moduleFilename)
     },
     globalObject
   )

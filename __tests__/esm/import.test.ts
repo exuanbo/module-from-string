@@ -1,3 +1,4 @@
+import os from 'os'
 import path from 'path'
 import { fileURLToPath, pathToFileURL } from 'url'
 import { importFromString, createImportFromString, importFromStringSync } from '../../src/index'
@@ -68,8 +69,8 @@ export default code
     expect((await importModule(pathToFileURL(absoluteModulePath).toString())).greet).toBe('hi')
   })
 
-  it('should be able to access __dirname and __filename', () => {
-    const res = importFromStringSync(`
+  it('should be able to access __dirname and __filename', async () => {
+    const res = await importFromString(`
       export const dirname = __dirname
       export const filename = __filename
     `)
@@ -133,6 +134,43 @@ export default code
       transformOptions: { loader: 'ts' }
     })
     expect(res.default()).toBe('hi')
+  })
+
+  it('should use relative filename in error stack trace', async () => {
+    expect.assertions(1)
+    const filename = 'foo.js'
+    const relativeDirname = path.relative(process.cwd(), __dirname)
+    const relativeFilename = path.join(relativeDirname, filename)
+    try {
+      await importFromString('throw new Error("boom")', {
+        filename,
+        useCurrentGlobal: true
+      })
+    } catch (err) {
+      if (err instanceof Error) {
+        expect(err.stack).toMatch(new RegExp(`at file://\\S+${relativeFilename}:\\d+:\\d+$`, 'm'))
+      } else {
+        throw err
+      }
+    }
+  })
+
+  it('should use absolute filename in error stack trace', async () => {
+    expect.assertions(1)
+    const filenamePath = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
+    const filename = pathToFileURL(filenamePath).toString()
+    try {
+      await importFromString('throw new Error("boom")', {
+        filename,
+        useCurrentGlobal: true
+      })
+    } catch (err) {
+      if (err instanceof Error) {
+        expect(err.stack).toMatch(new RegExp(`at ${filename}:\\d+:\\d+$`, 'm'))
+      } else {
+        throw err
+      }
+    }
   })
 })
 

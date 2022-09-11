@@ -1,16 +1,18 @@
 import { Module, createRequire } from 'module'
-import { join } from 'path'
 import { Context, runInNewContext } from 'vm'
 import { nanoid } from 'nanoid'
 import {
   isInESModuleScope,
+  ensurePath,
   getCallerDirname,
+  getModuleFilename,
   createGlobalObject,
   createContextObject,
   resolveModuleSpecifier
 } from './utils'
 
 export interface Options {
+  filename?: string | undefined
   dirname?: string | undefined
   globals?: Context | undefined
   useCurrentGlobal?: boolean | undefined
@@ -18,9 +20,14 @@ export interface Options {
 
 export const requireFromString = (
   code: string,
-  { dirname = getCallerDirname(), globals = {}, useCurrentGlobal = false }: Options | undefined = {}
+  {
+    filename = `${nanoid()}.js`,
+    dirname = getCallerDirname(),
+    globals = {},
+    useCurrentGlobal = false
+  }: Options | undefined = {}
 ): any => {
-  const moduleFilename = join(dirname, `${nanoid()}.js`)
+  const moduleFilename = ensurePath(getModuleFilename(dirname, filename))
   const mainModule = isInESModuleScope() ? undefined : require.main
   const contextModule = new Module(moduleFilename, mainModule)
 
