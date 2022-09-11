@@ -1,5 +1,6 @@
 import os from 'os'
 import path from 'path'
+import normalizePath from 'normalize-path'
 import { fileURLToPath, pathToFileURL } from 'url'
 import { importFromString, createImportFromString, importFromStringSync } from '../../src/index'
 
@@ -139,8 +140,9 @@ export default code
   it('should use relative filename in error stack trace', async () => {
     expect.assertions(1)
     const filename = 'foo.js'
-    const relativeDirname = path.relative(process.cwd(), __dirname)
-    const relativeFilename = path.join(relativeDirname, filename)
+    const relativeDirnamePath = path.relative(process.cwd(), __dirname)
+    const relativeFilenamePath = path.join(relativeDirnamePath, filename)
+    const relativeFilename = normalizePath(relativeFilenamePath)
     try {
       await importFromString('throw new Error("boom")', {
         filename,

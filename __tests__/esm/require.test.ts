@@ -103,7 +103,11 @@ it('should use relative filename in error stack trace', () => {
 
 it('should use absolute filename in error stack trace', () => {
   expect.assertions(1)
-  const filename = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
+  const homedir = os.homedir()
+  const normalizedHomedir = /^[A-Z]/.test(homedir)
+    ? `${homedir[0].toLowerCase()}${homedir.slice(1)}`
+    : homedir
+  const filename = path.join(normalizedHomedir, 'foo', 'bar', 'baz.js')
   try {
     requireFromString('throw new Error("boom")', {
       filename,
