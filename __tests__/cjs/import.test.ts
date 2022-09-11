@@ -1,5 +1,6 @@
 import os from 'os'
 import path from 'path'
+import normalizePath from 'normalize-path'
 import {
   importFromString,
   createImportFromString,
@@ -144,7 +145,7 @@ export default code
       })
     } catch (err) {
       if (err instanceof Error) {
-        expect(err.stack).toMatch(new RegExp(`at \\S+${relativeFilename}:\\d+:\\d+$`, 'm'))
+        expect(err.stack).toMatch(new RegExp(`at \\S*${relativeFilename}:\\d+:\\d+$`, 'm'))
       } else {
         throw err
       }
@@ -153,7 +154,8 @@ export default code
 
   it('should use absolute filename in error stack trace', async () => {
     expect.assertions(1)
-    const filename = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
+    const filenamePath = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
+    const filename = normalizePath(filenamePath)
     try {
       await importFromStringFn('throw new Error("boom")', {
         filename,

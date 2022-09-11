@@ -1,5 +1,6 @@
 import os from 'os'
 import path from 'path'
+import normalizePath from 'normalize-path'
 import { requireFromString, createRequireFromString } from '../../src/index'
 
 it('should work with `module.exports`', () => {
@@ -100,7 +101,7 @@ it('should use relative filename in error stack trace', () => {
     })
   } catch (err) {
     if (err instanceof Error) {
-      expect(err.stack).toMatch(new RegExp(`at \\S+${relativeFilename}:\\d+:\\d+$`, 'm'))
+      expect(err.stack).toMatch(new RegExp(`at \\S*${relativeFilename}:\\d+:\\d+$`, 'm'))
     } else {
       throw err
     }
@@ -109,7 +110,8 @@ it('should use relative filename in error stack trace', () => {
 
 it('should use absolute filename in error stack trace', () => {
   expect.assertions(1)
-  const filename = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
+  const filenamePath = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
+  const filename = normalizePath(filenamePath)
   try {
     requireFromString('throw new Error("boom")', {
       filename,
