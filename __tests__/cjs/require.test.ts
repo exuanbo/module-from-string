@@ -1,6 +1,5 @@
 import os from 'os'
 import path from 'path'
-import normalizePath from 'normalize-path'
 import { requireFromString, createRequireFromString } from '../../src/index'
 
 it('should work with `module.exports`', () => {
@@ -92,9 +91,8 @@ it('should be able to override current global', () => {
 it('should use relative filename in error stack trace', () => {
   expect.assertions(1)
   const filename = 'foo.js'
-  const relativeDirnamePath = path.relative(process.cwd(), __dirname)
-  const relativeFilenamePath = path.join(relativeDirnamePath, filename)
-  const relativeFilename = normalizePath(relativeFilenamePath)
+  const relativeDirname = path.relative(process.cwd(), __dirname)
+  const relativeFilename = path.join(relativeDirname, filename)
   try {
     requireFromString('throw new Error("boom")', {
       filename,
@@ -111,8 +109,7 @@ it('should use relative filename in error stack trace', () => {
 
 it('should use absolute filename in error stack trace', () => {
   expect.assertions(1)
-  const filenamePath = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
-  const filename = normalizePath(filenamePath)
+  const filename = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
   try {
     requireFromString('throw new Error("boom")', {
       filename,

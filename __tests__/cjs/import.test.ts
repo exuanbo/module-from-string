@@ -1,6 +1,5 @@
 import os from 'os'
 import path from 'path'
-import normalizePath from 'normalize-path'
 import {
   importFromString,
   createImportFromString,
@@ -136,9 +135,8 @@ export default code
   it('should use relative filename in error stack trace', async () => {
     expect.assertions(1)
     const filename = 'foo.js'
-    const relativeDirnamePath = path.relative(process.cwd(), __dirname)
-    const relativeFilenamePath = path.join(relativeDirnamePath, filename)
-    const relativeFilename = normalizePath(relativeFilenamePath)
+    const relativeDirname = path.relative(process.cwd(), __dirname)
+    const relativeFilename = path.join(relativeDirname, filename)
     try {
       await importFromStringFn('throw new Error("boom")', {
         filename,
@@ -155,8 +153,7 @@ export default code
 
   it('should use absolute filename in error stack trace', async () => {
     expect.assertions(1)
-    const filenamePath = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
-    const filename = normalizePath(filenamePath)
+    const filename = path.join(os.homedir(), 'foo', 'bar', 'baz.js')
     try {
       await importFromStringFn('throw new Error("boom")', {
         filename,
