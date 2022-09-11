@@ -1,6 +1,7 @@
 import os from 'os'
 import path from 'path'
 import { fileURLToPath, pathToFileURL } from 'url'
+import normalizePath from 'normalize-path'
 import { importFromString, createImportFromString, importFromStringSync } from '../../src/index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -139,8 +140,9 @@ export default code
   it('should use relative filename in error stack trace', async () => {
     expect.assertions(1)
     const filename = 'foo.js'
-    const relativeDirname = path.relative(process.cwd(), __dirname)
-    const relativeFilename = path.join(relativeDirname, filename)
+    const relativeDirnamePath = path.relative(process.cwd(), __dirname)
+    const relativeFilenamePath = path.join(relativeDirnamePath, filename)
+    const relativeFilename = normalizePath(relativeFilenamePath)
     try {
       await importFromString('throw new Error("boom")', {
         filename,
@@ -148,7 +150,7 @@ export default code
       })
     } catch (err) {
       if (err instanceof Error) {
-        expect(err.stack).toMatch(new RegExp(`at file://\\S+${relativeFilename}:\\d+:\\d+$`, 'm'))
+        expect(err.stack).toMatch(`${relativeFilename}:`)
       } else {
         throw err
       }
@@ -166,7 +168,7 @@ export default code
       })
     } catch (err) {
       if (err instanceof Error) {
-        expect(err.stack).toMatch(new RegExp(`at ${filename}:\\d+:\\d+$`, 'm'))
+        expect(err.stack).toMatch(`${filename}:`)
       } else {
         throw err
       }

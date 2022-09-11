@@ -92,8 +92,9 @@ it('should be able to override current global', () => {
 it('should use relative filename in error stack trace', () => {
   expect.assertions(1)
   const filename = 'foo.js'
-  const relativeDirname = path.relative(process.cwd(), __dirname)
-  const relativeFilename = path.join(relativeDirname, filename)
+  const relativeDirnamePath = path.relative(process.cwd(), __dirname)
+  const relativeFilenamePath = path.join(relativeDirnamePath, filename)
+  const relativeFilename = normalizePath(relativeFilenamePath)
   try {
     requireFromString('throw new Error("boom")', {
       filename,
@@ -101,7 +102,7 @@ it('should use relative filename in error stack trace', () => {
     })
   } catch (err) {
     if (err instanceof Error) {
-      expect(err.stack).toMatch(new RegExp(`at \\S*${relativeFilename}:\\d+:\\d+$`, 'm'))
+      expect(err.stack).toMatch(`${relativeFilename}:`)
     } else {
       throw err
     }
@@ -119,7 +120,7 @@ it('should use absolute filename in error stack trace', () => {
     })
   } catch (err) {
     if (err instanceof Error) {
-      expect(err.stack).toMatch(new RegExp(`at ${filename}:\\d+:\\d+$`, 'm'))
+      expect(err.stack).toMatch(`${filename}:`)
     } else {
       throw err
     }
