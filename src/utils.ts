@@ -45,9 +45,9 @@ export const getCallerDirname = (): string => {
   return dirname(ensurePath(callerFilename))
 }
 
-const normalizeDirname = (dirname: string): string => {
-  const separater = isFileURL(dirname) ? '/' : sep
-  return dirname.endsWith(separater) ? dirname : `${dirname}${separater}`
+const ensureTrailingSeparator = (dirname: string): string => {
+  const separator = isFileURL(dirname) ? '/' : sep
+  return dirname.endsWith(separator) ? dirname : `${dirname}${separator}`
 }
 
 export const getModuleFilename = (dirname: string, filename: string): string => {
@@ -55,8 +55,8 @@ export const getModuleFilename = (dirname: string, filename: string): string => 
     if (isFileURL(filename)) {
       return filename
     } else {
-      const normalizedDirname = normalizeDirname(dirname)
-      return new URL(filename, ensureFileURL(normalizedDirname)).toString()
+      const validatedDirname = ensureTrailingSeparator(dirname)
+      return new URL(filename, ensureFileURL(validatedDirname)).toString()
     }
   } else {
     return resolve(ensurePath(dirname), ensurePath(filename))
