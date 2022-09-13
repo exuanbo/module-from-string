@@ -42,6 +42,7 @@ import { Context } from 'vm';
 import { TransformOptions } from 'esbuild';
 
 interface Options {
+  filename?: string
   dirname?: string
   globals?: Context
   useCurrentGlobal?: boolean
@@ -61,9 +62,27 @@ declare const importFromStringSync: (code: string, options?: ImportOptions) => a
 declare const createImportFromStringSync: (options?: ImportOptions) => typeof importFromStringSync
 ```
 
+### filename
+
+Name, path or URL string of the virtual file for better exception stack trace.
+
+```js
+requireFromString(
+  "throw new Error('boom!')",
+  { filename: '/home/foo.js' }
+)
+// /home/foo.js:1
+// throw new Error('boom!')
+// ^
+//
+// Error: boom!
+//     at /home/foo.js:1:7
+//     at ...
+```
+
 ### dirname
 
-An absolute path of the directory for resolving `require` or `import` from relative path.
+Path or URL string of the directory for resolving `require` or `import` from relative path.
 
 ```js
 requireFromString(
