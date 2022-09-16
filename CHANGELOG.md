@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.3.0](https://github.com/exuanbo/module-from-string/compare/v3.2.1...v3.3.0) (2022-09-16)
+
+### Features
+
+- Add option `filename` for better exception stack trace.
+
 ## [3.2.1](https://github.com/exuanbo/module-from-string/compare/v3.2.0...v3.2.1) (2022-08-02)
 
 ### Bug Fixes
