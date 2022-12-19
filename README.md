@@ -3,7 +3,7 @@
 > Load module from string using `require` or `import`.
 
 [![npm](https://img.shields.io/npm/v/module-from-string.svg)](https://www.npmjs.com/package/module-from-string)
-[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/exuanbo/module-from-string/Node.js%20CI/main.svg)](https://github.com/exuanbo/module-from-string/actions?query=workflow)
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/exuanbo/module-from-string/nodejs.yml.svg?branch=main)](https://github.com/exuanbo/module-from-string/actions?query=workflow)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D12.20.0-brightgreen.svg)](https://nodejs.org/)
 [![libera manifesto](https://img.shields.io/badge/libera-manifesto-lightgrey.svg)](https://liberamanifesto.com)
 
