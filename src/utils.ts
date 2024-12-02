@@ -96,8 +96,13 @@ export const createGlobalObject = (globals: Context, useCurrentGlobal: boolean):
       })
   forEachPropertyKey(globals, propertyKey => {
     if (propertyKey in __GLOBAL__) {
+      const descriptor = Object.getOwnPropertyDescriptor(__GLOBAL__, propertyKey)
+      if (descriptor !== undefined) {
+        delete descriptor.get
+        delete descriptor.set
+      }
       Object.defineProperty(globalObject, propertyKey, {
-        ...Object.getOwnPropertyDescriptor(__GLOBAL__, propertyKey),
+        ...descriptor,
         value: globals[propertyKey as keyof Context]
       })
     } else {

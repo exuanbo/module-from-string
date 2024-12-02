@@ -102,6 +102,26 @@ export default code
     expect(res.cwd).toBe(process.cwd())
   })
 
+  it('should work with provided globals defined by accessors in the current global', async () => {
+    const OriginalBuffer = Buffer
+    Object.defineProperty(global, 'Buffer', {
+      get: () => OriginalBuffer,
+      set: () => {
+        // ok
+      }
+    })
+    try {
+      const res = await importFromString('export const bufferType = typeof Buffer;', {
+        globals: { Buffer }
+      })
+      expect(res.bufferType).toBe('function')
+    } finally {
+      Object.defineProperty(global, 'Buffer', {
+        value: OriginalBuffer
+      })
+    }
+  })
+
   it('should have access the global object', async () => {
     const res = await importFromString('export const { greet } = global', {
       globals: { greet: 'hi' }
