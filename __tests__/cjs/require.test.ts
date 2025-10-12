@@ -123,3 +123,28 @@ it('should use absolute filename in error stack trace', () => {
     }
   }
 })
+
+it('should isolate global variables', () => {
+  global.testVar = 'original'
+
+  requireFromString('global.testVar = "modified"')
+
+  expect(global.testVar).toBe('original')
+  delete global.testVar
+})
+
+it('should isolate prototype modifications', () => {
+  const originalToString = Object.prototype.toString
+
+  requireFromString('Object.prototype.toString = () => "hacked"')
+
+  expect(Object.prototype.toString).toBe(originalToString)
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  expect({}.toString()).not.toBe('hacked')
+})
+
+it('should have isolated Error constructor by default', () => {
+  const error = requireFromString('module.exports = new Error("test")')
+  expect(error instanceof Error).toBe(false)
+  expect(error.constructor.name).toBe('Error')
+})

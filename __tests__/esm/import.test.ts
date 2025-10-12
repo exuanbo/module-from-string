@@ -174,6 +174,16 @@ export default code
       }
     }
   })
+
+  it('should isolate prototype modifications', async () => {
+    const originalToString = Object.prototype.toString
+
+    await importFromString('Object.prototype.toString = () => "hacked"; export default true')
+
+    expect(Object.prototype.toString).toBe(originalToString)
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    expect({}.toString()).not.toBe('hacked')
+  })
 })
 
 describe('importFromStringSync', () => {

@@ -88,13 +88,13 @@ Enable '--experimental-vm-modules' CLI option or replace it with dynamic 'import
   const moduleFilename = getModuleFilename(dirname, filename)
   const moduleFileURLString = ensureFileURL(moduleFilename)
 
-  const globalObject = createGlobalObject(globals, useCurrentGlobal)
+  const globalMap = createGlobalObject(globals, useCurrentGlobal)
   const contextObject = createContextObject(
     {
       __dirname: ensurePath(dirname),
       __filename: ensurePath(moduleFilename)
     },
-    globalObject
+    globalMap
   )
   contextObject[IMPORTS] = {}
   const context = createContext(contextObject)
