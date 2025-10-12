@@ -35,7 +35,7 @@ export const requireFromString = (
   contextModule.filename = moduleFilename
   contextModule.paths = mainModule?.paths ?? []
 
-  const globalObject = createGlobalObject(globals, useCurrentGlobal)
+  const globalMap = createGlobalObject(globals, useCurrentGlobal)
   const contextObject = createContextObject(
     {
       exports: contextModule.exports,
@@ -44,7 +44,7 @@ export const requireFromString = (
       __filename: contextModule.filename,
       __dirname: contextModule.path
     },
-    globalObject
+    globalMap
   )
 
   runInNewContext(code, contextObject, {

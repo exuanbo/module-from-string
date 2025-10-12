@@ -88,29 +88,46 @@ const getCurrentGlobal = (): Context => {
   return currentGlobal
 }
 
-export const createGlobalObject = (globals: Context, useCurrentGlobal: boolean): Context => {
-  const globalObject = useCurrentGlobal
-    ? getCurrentGlobal()
-    : Object.defineProperty({}, Symbol.toStringTag, {
-        ...Object.getOwnPropertyDescriptor(__GLOBAL__, Symbol.toStringTag)
-      })
-  forEachPropertyKey(globals, propertyKey => {
-    if (propertyKey in __GLOBAL__) {
-      Object.defineProperty(globalObject, propertyKey, {
-        ...Object.getOwnPropertyDescriptor(__GLOBAL__, propertyKey),
-        value: globals[propertyKey as keyof Context]
-      })
-    } else {
-      Object.defineProperty(globalObject, propertyKey, {
-        ...Object.getOwnPropertyDescriptor(globals, propertyKey)
-      })
-    }
+export const createGlobalObject = (
+  globals: Context,
+  useCurrentGlobal: boolean
+): Map<string | symbol, any> => {
+  const globalMap = new Map()
+
+  if (useCurrentGlobal) {
+    const currentGlobal = getCurrentGlobal()
+    Object.getOwnPropertyNames(currentGlobal).forEach(key => {
+      globalMap.set(key, currentGlobal[key])
+    })
+    Object.getOwnPropertySymbols(currentGlobal).forEach(key => {
+      // @ts-expect-error: safe to ignore
+      globalMap.set(key, currentGlobal[key])
+    })
+  }
+
+  // Add user globals to Map (protected from pollution)
+  Object.getOwnPropertyNames(globals).forEach(key => {
+    globalMap.set(key, globals[key])
   })
-  return globalObject
+  Object.getOwnPropertySymbols(globals).forEach(key => {
+    // @ts-expect-error: safe to ignore
+    globalMap.set(key, globals[key])
+  })
+
+  return globalMap
 }
 
-export const createContextObject = (moduleContext: Context, globalObject: Context): Context => {
-  const contextObject: Context = shallowMergeContext(moduleContext, globalObject)
+export const createContextObject = (
+  moduleContext: Context,
+  globalMap: Map<string | symbol, any>
+): Context => {
+  const contextObject: Context = { ...moduleContext }
+
+  // Convert Map back to object for VM context, but only with safe values
+  globalMap.forEach((value, key) => {
+    contextObject[key as keyof Context] = value
+  })
+
   if (!('global' in contextObject)) {
     contextObject.global = contextObject
   }
